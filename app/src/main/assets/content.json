@@ -1,0 +1,3723 @@
+{
+ "version": 1,
+ "chapters": [
+  {
+   "id": 1,
+   "title": "The NetSuite Mental Model",
+   "subtitle": "How the platform fits together",
+   "week": "Week 1",
+   "sections": [
+    {
+     "title": "One database, many records",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "NetSuite is a cloud **ERP**: a single database that holds accounting, inventory, orders, customers, vendors, employees and more. Every business object (a customer, a sales order, an item) is a **record**."
+      },
+      {
+       "t": "p",
+       "text": "You never touch that database directly. There is no SQL `UPDATE` and no direct table access. Every change goes through NetSuite's own APIs so that its business rules, permissions, sourcing and GL posting always run."
+      },
+      {
+       "t": "tip",
+       "text": "When something feels impossible, ask: which record holds this data, and which layer (configuration, workflow or script) is allowed to change it?"
+      }
+     ]
+    },
+    {
+     "title": "The three layers of customization",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Layer",
+         "What it is",
+         "Use it to"
+        ],
+        [
+         "Configuration",
+         "Point-and-click setup: custom fields, forms, lists, roles",
+         "Shape the data model without code"
+        ],
+        [
+         "SuiteFlow",
+         "Visual workflow builder",
+         "Approvals and simple automation"
+        ],
+        [
+         "SuiteScript",
+         "JavaScript run by NetSuite on the server or in the browser",
+         "Business logic, automation, custom pages, APIs"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "text": "Good NetSuite developers reach for these in order. Configuration is cheapest to maintain, workflows are next, and code is for everything the first two can't do cleanly."
+      }
+     ]
+    },
+    {
+     "title": "Talking to NetSuite from outside",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "External systems never connect to the database. They use **SuiteTalk** web services (REST or the older SOAP API) or a **RESTlet**, which is an HTTP endpoint you write yourself in SuiteScript."
+      },
+      {
+       "t": "p",
+       "text": "The whole developer toolset (SuiteScript, SuiteTalk, SuiteFlow, SDF, the CLI) is branded **SuiteCloud**."
+      }
+     ]
+    },
+    {
+     "title": "Navigating as a user first",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Before writing code, learn the product the way your users see it. Developers who skip this step write scripts that fight the platform."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Show Internal IDs**: Home → Set Preferences → General → Show Internal IDs. Field IDs then appear when you hover or click a field label, and lists show record IDs.",
+        "**Global search**: the search bar accepts prefixes like `cus: acme` or `so: 1001` to jump straight to records.",
+        "**Record URLs**: a record's URL contains its internal ID, e.g. `.../salesord.nl?id=4512`.",
+        "**Customization menu**: Customization → Lists, Records & Fields; Customization → Scripting; Customization → Workflow."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "The order-to-cash chain",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Transactions flow into each other. Following one chain end to end teaches you more than any diagram:"
+      },
+      {
+       "t": "steps",
+       "items": [
+        "**Sales Order**: the customer commits to buy. No GL impact yet.",
+        "**Item Fulfillment**: the warehouse ships. Inventory and COGS post.",
+        "**Invoice**: the customer is billed. Revenue and Accounts Receivable post.",
+        "**Customer Payment**: the money arrives and is applied to the invoice."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "The mirror image on the buying side is **procure-to-pay**: Purchase Order → Item Receipt → Vendor Bill → Bill Payment."
+      },
+      {
+       "t": "tip",
+       "text": "Each downstream record links back to its source through the `createdfrom` field. Scripts and searches use it constantly."
+      }
+     ]
+    },
+    {
+     "title": "Accounts you'll work in",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Never experiment in **production**. Practice in a **sandbox** (a copy of production) or a **development account** (clean, no live data). Chapter 10 covers environments in depth."
+      },
+      {
+       "t": "warn",
+       "text": "Scripts and workflows in production can email customers, post to the general ledger and change inventory. Treat production like a live wire."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "NetSuite is one database of records; you change data only through NetSuite's APIs.",
+    "Customize in this order: configuration, then SuiteFlow, then SuiteScript.",
+    "External systems use SuiteTalk (REST/SOAP) or RESTlets you write.",
+    "Turn on Show Internal IDs on day one.",
+    "Order-to-cash: Sales Order → Item Fulfillment → Invoice → Customer Payment."
+   ],
+   "lab": {
+    "title": "Walk the order-to-cash chain",
+    "goal": "See how transactions link and learn your first field IDs.",
+    "steps": [
+     "In a sandbox or dev account, turn on Show Internal IDs.",
+     "Create a customer. Note its internal ID from the URL.",
+     "Create a sales order for that customer with two item lines. Hover over Customer, Date and Memo and write down their field IDs (`entity`, `trandate`, `memo`).",
+     "Fulfill the order, then bill it to create an invoice.",
+     "Accept a customer payment against the invoice.",
+     "Open the invoice and find the Created From field. Click through back to the sales order.",
+     "On the sales order, open the Related Records subtab and identify every record in the chain."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "What is a record?",
+     "back": "Any business object stored in NetSuite: customer, sales order, item, employee, custom record, and so on."
+    },
+    {
+     "front": "Three layers of customization",
+     "back": "Configuration, SuiteFlow (workflows) and SuiteScript (code)."
+    },
+    {
+     "front": "SuiteTalk",
+     "back": "NetSuite's web services: the REST API and the older SOAP API."
+    },
+    {
+     "front": "RESTlet",
+     "back": "An HTTP endpoint you write in SuiteScript for custom integrations."
+    },
+    {
+     "front": "SuiteCloud",
+     "back": "The brand for NetSuite's whole developer platform and toolset."
+    },
+    {
+     "front": "Order-to-cash chain",
+     "back": "Sales Order → Item Fulfillment → Invoice → Customer Payment."
+    },
+    {
+     "front": "Procure-to-pay chain",
+     "back": "Purchase Order → Item Receipt → Vendor Bill → Bill Payment."
+    },
+    {
+     "front": "createdfrom",
+     "back": "The field that links a transaction to the transaction it was created from."
+    }
+   ],
+   "questions": [
+    {
+     "q": "How do external systems change data in NetSuite?",
+     "options": [
+      "Through SuiteTalk web services or RESTlets",
+      "With direct SQL connections to the NetSuite database",
+      "By uploading files to the File Cabinet only",
+      "By editing the database through ODBC write access"
+     ],
+     "answer": 0,
+     "explain": "NetSuite never exposes its database for writes. Integrations go through SuiteTalk (REST/SOAP) or RESTlets so business rules and permissions always apply."
+    },
+    {
+     "q": "Which customization layer should you consider FIRST for a new requirement?",
+     "options": [
+      "Configuration (custom fields, forms, roles)",
+      "SuiteScript",
+      "A RESTlet",
+      "A Map/Reduce script"
+     ],
+     "answer": 0,
+     "explain": "Configuration is the cheapest to build and maintain. Reach for workflows next and code last."
+    },
+    {
+     "q": "Which transaction has NO general ledger impact?",
+     "options": [
+      "Sales Order",
+      "Invoice",
+      "Item Fulfillment",
+      "Customer Payment"
+     ],
+     "answer": 0,
+     "explain": "A sales order is a commitment, not a financial event. Fulfillment posts inventory/COGS, the invoice posts revenue and A/R, and the payment posts cash."
+    },
+    {
+     "q": "What is the correct order-to-cash sequence?",
+     "options": [
+      "Sales Order → Item Fulfillment → Invoice → Customer Payment",
+      "Invoice → Sales Order → Item Fulfillment → Customer Payment",
+      "Sales Order → Invoice → Customer Payment → Item Fulfillment",
+      "Quote → Customer Payment → Sales Order → Invoice"
+     ],
+     "answer": 0,
+     "explain": "Order, ship, bill, collect. (Some businesses bill before shipping, but this is the standard chain.)"
+    },
+    {
+     "q": "Which preference makes field IDs visible in the UI?",
+     "options": [
+      "Show Internal IDs",
+      "Enable SuiteScript Debugging",
+      "Developer Mode",
+      "Display Field Metadata"
+     ],
+     "answer": 0,
+     "explain": "Home → Set Preferences → General → Show Internal IDs. It's the first thing every NetSuite developer turns on."
+    },
+    {
+     "q": "What is SuiteCloud?",
+     "options": [
+      "The brand for NetSuite's developer platform and tools",
+      "NetSuite's data center hosting service",
+      "A paid add-on for extra storage",
+      "The NetSuite mobile app"
+     ],
+     "answer": 0,
+     "explain": "SuiteCloud covers SuiteScript, SuiteTalk, SuiteFlow, SDF and related tools."
+    },
+    {
+     "q": "A downstream transaction points to its source transaction through which field?",
+     "options": [
+      "createdfrom",
+      "parentid",
+      "sourcetran",
+      "linkedrecord"
+     ],
+     "answer": 0,
+     "explain": "`createdfrom` on an invoice or fulfillment holds the internal ID of the sales order it came from."
+    },
+    {
+     "q": "What is a RESTlet?",
+     "options": [
+      "A SuiteScript you write that is exposed as an HTTP endpoint",
+      "NetSuite's built-in REST record API",
+      "A lightweight saved search",
+      "A workflow that runs on a schedule"
+     ],
+     "answer": 0,
+     "explain": "RESTlets are custom endpoints. NetSuite's built-in REST API is SuiteTalk REST Web Services."
+    },
+    {
+     "q": "Where should you practice writing scripts?",
+     "options": [
+      "A sandbox or development account",
+      "Production, during off-hours",
+      "Production, using Testing status only",
+      "Any account, since scripts can't change data"
+     ],
+     "answer": 0,
+     "explain": "Scripts can email customers and post to the ledger. Practice in a sandbox or development account."
+    },
+    {
+     "q": "Which is the procure-to-pay sequence?",
+     "options": [
+      "Purchase Order → Item Receipt → Vendor Bill → Bill Payment",
+      "Vendor Bill → Purchase Order → Item Receipt → Bill Payment",
+      "Purchase Order → Vendor Bill → Item Fulfillment → Customer Payment",
+      "Requisition → Invoice → Item Receipt → Payment"
+     ],
+     "answer": 0,
+     "explain": "Buy, receive, get billed, pay. It mirrors order-to-cash on the vendor side."
+    },
+    {
+     "q": "Why can't you just run SQL UPDATE statements against NetSuite?",
+     "options": [
+      "All changes must go through NetSuite's APIs so rules, permissions and postings run",
+      "NetSuite's database is read-only for everyone",
+      "SQL is only blocked in sandboxes",
+      "UPDATE works but is slow"
+     ],
+     "answer": 0,
+     "explain": "NetSuite enforces its business logic at the API layer. SuiteQL is read-only; writes always go through records."
+    },
+    {
+     "q": "In the global search bar, what does typing `so: 1001` do?",
+     "options": [
+      "Searches sales orders for 1001",
+      "Opens SuiteScript object 1001",
+      "Runs saved search 1001",
+      "Opens script deployment 1001"
+     ],
+     "answer": 0,
+     "explain": "Global search accepts record-type prefixes like `cus:`, `so:` and `inv:` to narrow results."
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Records, Fields & IDs",
+   "subtitle": "The data model every script touches",
+   "week": "Week 1",
+   "sections": [
+    {
+     "title": "Anatomy of a record",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Every record has a **type** (like `salesorder`, `customer`, `inventoryitem`), an **internal ID** (a number, unique within that type) and **fields**."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Body fields** live on the record header: `entity` (customer), `trandate`, `memo`, `status`.",
+        "**Sublists** are line tables. A sales order's `item` sublist has one row per product, with fields like `item`, `quantity`, `rate` and `amount`.",
+        "**Subrecords** are records nested inside a record, such as an address or inventory detail."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "IDs, not labels",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Scripts use **field IDs**, never the labels shown on screen. A label like \"Customer\" can be renamed per form, but its ID `entity` never changes."
+      },
+      {
+       "t": "p",
+       "text": "Values also come in two flavors. `getValue` returns the stored value (for a list field, the internal ID of the selected option). `getText` returns what the user sees (the display name)."
+      },
+      {
+       "t": "code",
+       "text": "const custId = so.getValue({ fieldId: 'entity' }); // '342'\nconst custName = so.getText({ fieldId: 'entity' });  // 'Acme Corp'"
+      }
+     ]
+    },
+    {
+     "title": "Custom ID prefixes",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Custom objects get script IDs with a prefix that tells you what they are. NetSuite adds the prefix for you; you choose the rest (e.g. `custbody_rush_order`)."
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Prefix",
+         "Meaning"
+        ],
+        [
+         "custbody_",
+         "Custom transaction body field"
+        ],
+        [
+         "custcol_",
+         "Custom transaction line (column) field"
+        ],
+        [
+         "custentity_",
+         "Custom entity field (customer, vendor, employee)"
+        ],
+        [
+         "custitem_",
+         "Custom item field"
+        ],
+        [
+         "custrecord_",
+         "Field on a custom record type"
+        ],
+        [
+         "customrecord_",
+         "A custom record type itself"
+        ],
+        [
+         "customlist_",
+         "A custom list"
+        ],
+        [
+         "customsearch_",
+         "A saved search"
+        ],
+        [
+         "customscript_",
+         "A script record"
+        ],
+        [
+         "customdeploy_",
+         "A script deployment"
+        ]
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Pick descriptive IDs up front. Renaming a script ID later breaks every script and search that uses it."
+      }
+     ]
+    },
+    {
+     "title": "Record families",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Family",
+         "Examples",
+         "Notes"
+        ],
+        [
+         "Transactions",
+         "Sales order, invoice, PO, item fulfillment, journal entry",
+         "Post to the GL and flow into each other"
+        ],
+        [
+         "Entities",
+         "Customer, vendor, employee, contact, partner",
+         "People and companies"
+        ],
+        [
+         "Items",
+         "Inventory, non-inventory, service, assembly, kit",
+         "What you buy and sell"
+        ],
+        [
+         "Lists / setup",
+         "Subsidiary, department, class, location, account",
+         "Reference data"
+        ],
+        [
+         "Custom records",
+         "Anything you define",
+         "Your own tables"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "text": "In code, record types are referenced with the `record.Type` enum, like `record.Type.SALES_ORDER` (value `'salesorder'`) or `record.Type.CUSTOMER`."
+      }
+     ]
+    },
+    {
+     "title": "Classifications and OneWorld",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**Subsidiary**, **department**, **class** and **location** appear on almost every transaction and drive reporting."
+      },
+      {
+       "t": "p",
+       "text": "In **OneWorld** (multi-subsidiary) accounts, subsidiary is critical: it sets the base currency and controls which entities and items can transact together. Many \"why won't this save?\" errors come from subsidiary mismatches."
+      }
+     ]
+    },
+    {
+     "title": "Sourcing",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**Sourcing** is NetSuite auto-filling fields from related records. Pick a customer on a sales order and terms, addresses, price level and sales rep fill in. Pick an item and the rate fills in."
+      },
+      {
+       "t": "p",
+       "text": "Sourcing matters in scripts: it happens differently in standard and dynamic mode (Chapter 5), and setting fields in the wrong order can overwrite your values."
+      },
+      {
+       "t": "warn",
+       "text": "If you set `rate` and then set `item`, sourcing may replace your rate with the item's default price. Set the driving field first."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "Records have a type, an internal ID and fields: body fields, sublists and subrecords.",
+    "Scripts use field IDs, not labels. getValue returns IDs; getText returns display text.",
+    "Custom ID prefixes (custbody_, custcol_, custentity_, custitem_, custrecord_) tell you where a field lives.",
+    "Subsidiary, department, class and location classify transactions; subsidiary rules OneWorld.",
+    "Sourcing auto-fills fields from related records, so set driving fields first."
+   ],
+   "lab": {
+    "title": "Map a sales order",
+    "goal": "Document every important ID on one transaction.",
+    "steps": [
+     "Open any sales order with Show Internal IDs on.",
+     "List 6 body fields with their IDs (start with `entity`, `trandate`, `memo`, `subsidiary`, `location`, `status`).",
+     "Open the Items subtab and list the sublist ID (`item`) and 5 line field IDs.",
+     "Find the shipping address and note that it is a subrecord.",
+     "Change the customer on a new order and watch which fields source in automatically.",
+     "Look up the sales order in the SuiteScript Records Browser (Help Center) and compare your list."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "Body field vs. sublist field",
+     "back": "Body fields are on the header (one value per record). Sublist fields are on line rows (one value per line)."
+    },
+    {
+     "front": "getValue vs. getText",
+     "back": "getValue returns the stored value (an ID for list fields). getText returns the displayed text."
+    },
+    {
+     "front": "custbody_",
+     "back": "Custom transaction body field."
+    },
+    {
+     "front": "custcol_",
+     "back": "Custom transaction line (column) field."
+    },
+    {
+     "front": "custentity_",
+     "back": "Custom field on an entity (customer, vendor, employee...)."
+    },
+    {
+     "front": "customrecord_",
+     "back": "Script ID prefix for a custom record type."
+    },
+    {
+     "front": "Sourcing",
+     "back": "Auto-filling fields from a related record, like terms from the customer."
+    },
+    {
+     "front": "OneWorld",
+     "back": "Multi-subsidiary NetSuite; subsidiary drives currency and who can transact together."
+    },
+    {
+     "front": "Subrecord",
+     "back": "A record nested inside another, like an address or inventory detail."
+    }
+   ],
+   "questions": [
+    {
+     "q": "A custom field with the ID `custcol_engraving` lives where?",
+     "options": [
+      "On transaction lines",
+      "On the transaction header",
+      "On customer records",
+      "On a custom record type"
+     ],
+     "answer": 0,
+     "explain": "`custcol_` means transaction column (line) field."
+    },
+    {
+     "q": "Which prefix is used for a custom field on customer, vendor and employee records?",
+     "options": [
+      "custentity_",
+      "custbody_",
+      "custrecord_",
+      "custcust_"
+     ],
+     "answer": 0,
+     "explain": "Entities share the `custentity_` prefix; you choose which entity types it applies to."
+    },
+    {
+     "q": "What does this return for a sales order whose customer is 'Acme Corp' (internal ID 342)?",
+     "options": [
+      "'342'",
+      "'Acme Corp'",
+      "{ value: '342', text: 'Acme Corp' }",
+      "null, because entity is a list field"
+     ],
+     "answer": 0,
+     "explain": "getValue returns the stored value. For list/record fields that's the internal ID. Use getText for the name.",
+     "code": "so.getValue({ fieldId: 'entity' });"
+    },
+    {
+     "q": "Why do scripts use field IDs instead of labels?",
+     "options": [
+      "Labels can change per form or be renamed; IDs never change",
+      "Labels are only available in client scripts",
+      "IDs are shorter so scripts run faster",
+      "Labels are encrypted"
+     ],
+     "answer": 0,
+     "explain": "An admin can relabel \"Customer\" to \"Client\" on a form, but `entity` stays `entity`."
+    },
+    {
+     "q": "On a sales order, `item`, `quantity` and `rate` on each product row are...",
+     "options": [
+      "Sublist fields on the item sublist",
+      "Body fields",
+      "Subrecord fields",
+      "Custom record fields"
+     ],
+     "answer": 0,
+     "explain": "The `item` sublist holds one row per product; those are its line fields."
+    },
+    {
+     "q": "A shipping address on a transaction is an example of a...",
+     "options": [
+      "Subrecord",
+      "Sublist",
+      "Custom list",
+      "Saved search"
+     ],
+     "answer": 0,
+     "explain": "Addresses and inventory detail are subrecords: records nested inside another record."
+    },
+    {
+     "q": "In a OneWorld account, which classification controls base currency and which entities can transact together?",
+     "options": [
+      "Subsidiary",
+      "Department",
+      "Class",
+      "Location"
+     ],
+     "answer": 0,
+     "explain": "Subsidiary is the backbone of OneWorld. Mismatched subsidiaries are a classic save error."
+    },
+    {
+     "q": "What is sourcing?",
+     "options": [
+      "Auto-filling fields from a related record, like terms from the customer",
+      "Importing records from a CSV file",
+      "Loading script files from the File Cabinet",
+      "Copying a record to a new one"
+     ],
+     "answer": 0,
+     "explain": "Selecting a customer sources terms, addresses and more; selecting an item sources its rate."
+    },
+    {
+     "q": "A script sets `rate` to 50 and THEN sets `item`. The saved rate is the item's default price. Why?",
+     "options": [
+      "Setting the item triggered sourcing, which overwrote the rate",
+      "Rate can't be set by scripts",
+      "Rates are always recalculated on save",
+      "The script needed getText instead"
+     ],
+     "answer": 0,
+     "explain": "Set the driving field (item) first, then override dependent fields (rate)."
+    },
+    {
+     "q": "What is the value of `record.Type.SALES_ORDER`?",
+     "options": [
+      "'salesorder'",
+      "'SalesOrd'",
+      "'sales_order'",
+      "'transaction'"
+     ],
+     "answer": 0,
+     "explain": "The record.Type enum maps to lowercase record type IDs. (`SalesOrd` is the type value used in searches and SuiteQL.)"
+    },
+    {
+     "q": "Which prefix identifies a saved search?",
+     "options": [
+      "customsearch_",
+      "custsearch_",
+      "customscript_",
+      "savedsearch_"
+     ],
+     "answer": 0,
+     "explain": "Saved searches get `customsearch` script IDs; script records get `customscript`."
+    },
+    {
+     "q": "Which is NOT one of the four standard classifications?",
+     "options": [
+      "Currency",
+      "Department",
+      "Class",
+      "Location"
+     ],
+     "answer": 0,
+     "explain": "The classifications are subsidiary, department, class and location."
+    },
+    {
+     "q": "Where can you look up every field ID for a standard record type?",
+     "options": [
+      "The SuiteScript Records Browser in the Help Center",
+      "The File Cabinet",
+      "Setup → Company Information",
+      "The Execution Log"
+     ],
+     "answer": 0,
+     "explain": "The Records Browser lists body fields, sublists, search columns and joins per record type."
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Customization Without Code",
+   "subtitle": "Fields, records, forms and roles",
+   "week": "Week 3",
+   "sections": [
+    {
+     "title": "Ask this first",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Before writing a line of code, ask: **can this be done with configuration?** Less code means fewer upgrade issues, no governance limits to worry about, and something an admin can maintain without you."
+      }
+     ]
+    },
+    {
+     "title": "Custom fields",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Custom fields add data to existing records. You create them under Customization → Lists, Records & Fields, choosing the kind (transaction body, transaction line, entity, item, CRM, other)."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Type**: free-form text, integer, decimal, currency, date, checkbox, list/record, multiple select, long text, rich text, hyperlink and more.",
+        "**Applies To**: which record types show it (e.g. Sale, Purchase, Customer).",
+        "**Source List / Source From**: pull a value from a related record automatically.",
+        "**Store Value**: checked means the value is saved. Unchecked means it is calculated or sourced each time it is shown and not stored.",
+        "**Default Value / Formula**: a default or a formula like `{quantity} * {rate}`.",
+        "**Display**: subtab, display type (normal, inline/read-only, hidden, disabled), mandatory."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Hidden fields are great for scripts that need to stash a value on a record without users seeing it."
+      }
+     ]
+    },
+    {
+     "title": "Custom lists",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A **custom list** (`customlist_`) is a simple set of dropdown values like Priority: Low / Medium / High. Point a List/Record field at it to give users a dropdown."
+      },
+      {
+       "t": "p",
+       "text": "Use a custom record instead when each option needs more fields than a name."
+      }
+     ]
+    },
+    {
+     "title": "Custom record types",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A **custom record type** (`customrecord_`) is a brand-new table with its own fields (`custrecord_`), forms, permissions and searches. Use it for data NetSuite doesn't model: warranties, equipment, rebate agreements, integration logs."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Parent-child**: on the child record, create a List/Record field pointing at the parent and check **Record is Parent**. The children then show as a sublist on the parent.",
+        "**Access**: control with permissions per role, or let anyone with the record type see it.",
+        "**Numbering**: optionally auto-number records, and choose whether to show a Name field."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "An integration log as a custom record (request, response, status, timestamp) is one of the most useful things you'll ever build."
+      }
+     ]
+    },
+    {
+     "title": "Forms",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**Entry forms** (entities, items, custom records) and **transaction forms** control what users see: which fields and subtabs appear, layout, labels, and which fields are mandatory."
+      },
+      {
+       "t": "p",
+       "text": "A transaction form can also attach a **client script** on its Custom Code tab, which is one way to run browser logic only on a specific form."
+      },
+      {
+       "t": "warn",
+       "text": "Hiding a field on a form doesn't secure it. Users may still see it through searches, other forms or exports. Use permissions for security."
+      }
+     ]
+    },
+    {
+     "title": "Roles & permissions",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Roles bundle permissions: which records you can view, create, edit or fully control, and which reports and setup pages you can open."
+      },
+      {
+       "t": "p",
+       "text": "Scripts run in the context of a role too. A User Event runs as the user who triggered it, unless the deployment sets an **Execute As Role**. A large share of production bugs are really permission errors: works for the admin, fails for the clerk."
+      },
+      {
+       "t": "tip",
+       "text": "Test as a real end-user role, not as Administrator, before you call anything done."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "Always ask whether configuration can solve it before writing code.",
+    "Custom fields: choose type, Applies To, sourcing, Store Value and display settings carefully.",
+    "Custom lists are simple dropdowns; custom records are full tables.",
+    "Parent-child custom records use a List/Record field with Record is Parent checked.",
+    "Forms control layout, not security. Roles and permissions control security."
+   ],
+   "lab": {
+    "title": "Build a warranty tracker without code",
+    "goal": "Practice the configuration layer end to end.",
+    "steps": [
+     "Create a custom list `customlist_warranty_type` with values Standard, Extended and Lifetime.",
+     "Create a custom record type `customrecord_warranty` with fields: customer (List/Record → Customer), type (List → your custom list), start date, end date.",
+     "Create a child custom record `customrecord_warranty_claim` with a List/Record field to the warranty and check Record is Parent.",
+     "Create a few warranties and claims. Confirm the claims sublist appears on the warranty.",
+     "Add a transaction body checkbox `custbody_rush_order` that applies to sales orders.",
+     "Create a custom sales order form that puts Rush Order at the top and makes it mandatory.",
+     "Log in with a non-admin role and confirm what it can and can't see."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "Store Value (unchecked)",
+     "back": "The field is calculated or sourced on display and not saved to the database."
+    },
+    {
+     "front": "Custom list",
+     "back": "A simple set of dropdown values (customlist_)."
+    },
+    {
+     "front": "Custom record type",
+     "back": "A new table with its own fields, forms, permissions and searches (customrecord_)."
+    },
+    {
+     "front": "Record is Parent",
+     "back": "Checkbox on a List/Record field that shows child records as a sublist on the parent."
+    },
+    {
+     "front": "Do forms provide security?",
+     "back": "No. Forms control layout. Roles and permissions control security."
+    },
+    {
+     "front": "Execute As Role",
+     "back": "Deployment setting that makes a server script run with a specific role's permissions."
+    },
+    {
+     "front": "Display type: Inline",
+     "back": "Read-only text on the form."
+    }
+   ],
+   "questions": [
+    {
+     "q": "Before writing a script for a new requirement, what should you ask?",
+     "options": [
+      "Can this be done with configuration?",
+      "Which governance limit applies?",
+      "Should this be a RESTlet?",
+      "Which developer owns the File Cabinet?"
+     ],
+     "answer": 0,
+     "explain": "Configuration is easier to maintain and avoids governance and upgrade issues."
+    },
+    {
+     "q": "You need a dropdown of Low / Medium / High. What's the simplest tool?",
+     "options": [
+      "A custom list",
+      "A custom record type",
+      "A saved search",
+      "A Suitelet"
+     ],
+     "answer": 0,
+     "explain": "Custom lists are made exactly for simple dropdown values."
+    },
+    {
+     "q": "Each equipment unit needs a serial number, purchase date, location and owner. What should you build?",
+     "options": [
+      "A custom record type",
+      "A custom list",
+      "A custom body field",
+      "A workflow"
+     ],
+     "answer": 0,
+     "explain": "Data with several attributes of its own belongs in a custom record type."
+    },
+    {
+     "q": "How do you make claim records show as a sublist on their warranty record?",
+     "options": [
+      "Add a List/Record field on the claim pointing to the warranty and check Record is Parent",
+      "Add a sublist field on the warranty form",
+      "Create a saved search and attach it to the form",
+      "Write a User Event that copies claims onto the warranty"
+     ],
+     "answer": 0,
+     "explain": "Record is Parent turns the child-to-parent link into a sublist on the parent."
+    },
+    {
+     "q": "A custom field has Store Value unchecked. What happens?",
+     "options": [
+      "The value is calculated or sourced when shown and isn't saved",
+      "The field can't be displayed",
+      "The field is saved only on create",
+      "The field becomes mandatory"
+     ],
+     "answer": 0,
+     "explain": "Unstored fields are display-time values, handy for showing sourced data without duplicating it."
+    },
+    {
+     "q": "You hid the Credit Limit field on a form. Is the data now secure?",
+     "options": [
+      "No; users may still see it through searches, other forms or exports",
+      "Yes; hidden fields can't be read anywhere",
+      "Yes, for all roles except Administrator",
+      "Only if Store Value is unchecked"
+     ],
+     "answer": 0,
+     "explain": "Forms are layout. Use role permissions to secure data."
+    },
+    {
+     "q": "A script works for the admin but fails for a warehouse clerk. Most likely cause?",
+     "options": [
+      "The clerk's role lacks a permission the script needs",
+      "The script's API version is wrong",
+      "Client scripts don't run for non-admins",
+      "Governance limits are lower for non-admins"
+     ],
+     "answer": 0,
+     "explain": "Scripts often run with the triggering user's permissions. Test with real roles, or use Execute As Role."
+    },
+    {
+     "q": "Where can you attach a client script so it runs only on one specific transaction form?",
+     "options": [
+      "The form's Custom Code tab",
+      "The role's Permissions tab",
+      "The custom field's Display tab",
+      "The Company Preferences page"
+     ],
+     "answer": 0,
+     "explain": "Custom transaction forms have a Custom Code tab for attaching a client script."
+    },
+    {
+     "q": "Which field type gives users a dropdown pointing at customers?",
+     "options": [
+      "List/Record with list = Customer",
+      "Free-Form Text",
+      "Multiple Select with no list",
+      "Hyperlink"
+     ],
+     "answer": 0,
+     "explain": "List/Record fields store an internal ID and display the selected record's name."
+    },
+    {
+     "q": "Fields on a custom record type get which prefix?",
+     "options": [
+      "custrecord_",
+      "customrecord_",
+      "custbody_",
+      "custentity_"
+     ],
+     "answer": 0,
+     "explain": "`customrecord_` is the record type itself; its fields are `custrecord_`."
+    },
+    {
+     "q": "What does the Execute As Role setting on a deployment do?",
+     "options": [
+      "Runs the server script with that role's permissions",
+      "Restricts who can view the script record",
+      "Sets which role owns the script file",
+      "Limits the script to client-side execution"
+     ],
+     "answer": 0,
+     "explain": "It lets a server script do things the triggering user's role can't, so grant it carefully."
+    },
+    {
+     "q": "Which is a good use for a hidden custom field?",
+     "options": [
+      "Letting a script store a value on a record that users don't need to see",
+      "Securing salary data from managers",
+      "Making a field mandatory",
+      "Speeding up saved searches"
+     ],
+     "answer": 0,
+     "explain": "Hidden fields are a handy scratchpad for automation. They are not a security feature."
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Saved Searches & SuiteQL",
+   "subtitle": "Querying NetSuite data",
+   "week": "Week 2",
+   "sections": [
+    {
+     "title": "Why searches come first",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Saved searches are NetSuite's query builder and the single most useful skill to learn early. Admins use them for reports and dashboards; scripts use them to find records to process."
+      }
+     ]
+    },
+    {
+     "title": "Parts of a search",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "**Type**: Transaction, Customer, Item, a custom record, and so on.",
+        "**Criteria**: filters such as Type is Sales Order, Status is Pending Fulfillment, Main Line is true.",
+        "**Results**: the columns to return, optionally with a **summary type** (Group, Count, Sum, Minimum, Maximum, Average).",
+        "**Available Filters**: filters users can change when they run the search.",
+        "**Audience**: who can see and run it."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "Saved searches get script IDs starting with `customsearch` so scripts can load them by ID."
+      }
+     ]
+    },
+    {
+     "title": "The Main Line trap",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Transaction searches return **one row per line** by default: one for the header (the main line) plus rows for each item, tax and shipping line."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Main Line = true**: one row per transaction (header only).",
+        "**Main Line = false**: only line rows, for line-level detail like item and quantity."
+       ]
+      },
+      {
+       "t": "warn",
+       "text": "Duplicate rows in a transaction search almost always mean Main Line isn't set. Beginners hit this constantly."
+      }
+     ]
+    },
+    {
+     "title": "Joins and formulas",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Searches can reach into related records with **joins**. In a transaction search, the Customer fields join lets you show the customer's email or category."
+      },
+      {
+       "t": "p",
+       "text": "**Formula** columns and criteria use SQL-like expressions with field IDs in braces:"
+      },
+      {
+       "t": "code",
+       "text": "CASE WHEN {amount} > 1000 THEN 'Big' ELSE 'Small' END\nNVL({custbody_rush_order}, 'F')\nTO_CHAR({trandate}, 'YYYY-MM')\n{today} - {duedate}   -- days overdue"
+      },
+      {
+       "t": "tip",
+       "text": "Group by a TO_CHAR({trandate}, 'YYYY-MM') formula and Sum the amount to get sales by month."
+      }
+     ]
+    },
+    {
+     "title": "Searches in SuiteScript",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "The `N/search` module creates or loads searches. Filters can be written as **filter expressions**: arrays joined by `'AND'` / `'OR'`."
+      },
+      {
+       "t": "code",
+       "text": "search.create({\n  type: search.Type.SALES_ORDER,\n  filters: [\n    ['mainline', 'is', 'T'], 'AND',\n    ['status', 'anyof', 'SalesOrd:B'] // Pending Fulfillment\n  ],\n  columns: ['tranid', 'entity', 'total']\n}).run().each((r) => {\n  log.debug(r.getValue('tranid'), r.getText('entity'));\n  return true; // keep iterating\n});"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "`run().each()` stops after **4,000** results. Return `true` to keep going.",
+        "`run().getRange({ start, end })` returns at most **1,000** rows per call.",
+        "`runPaged({ pageSize })` handles large result sets: up to 1,000 rows per page.",
+        "`search.load({ id: 'customsearch_open_orders' })` loads an existing saved search.",
+        "`search.lookupFields()` reads a few fields from one record cheaply."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "SuiteQL",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**SuiteQL** is a SQL dialect (based on SQL-92 / Oracle syntax) over NetSuite's analytics data source. It is **read-only** and great for joins that searches make awkward. Run it with `N/query` or the REST SuiteQL endpoint."
+      },
+      {
+       "t": "code",
+       "text": "SELECT t.id, t.tranid,\n       BUILTIN.DF(t.entity) AS customer,\n       t.foreigntotal\nFROM transaction t\nWHERE t.type = 'SalesOrd'\n  AND t.trandate >= ADD_MONTHS(SYSDATE, -1)"
+      },
+      {
+       "t": "code",
+       "text": "const rows = query.runSuiteQL({\n  query: 'SELECT id, companyname FROM customer WHERE isinactive = ?',\n  params: ['F']\n}).asMappedResults(); // [{ id: 12, companyname: 'Acme' }, ...]"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "`BUILTIN.DF(field)` returns a field's display value instead of its ID.",
+        "Use `?` placeholders with `params` instead of string concatenation.",
+        "`runSuiteQL` returns up to 5,000 rows; use `runSuiteQLPaged` for more.",
+        "Transaction type values are codes like `SalesOrd`, `CustInvc`, `PurchOrd`."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Explore table and column names in the Records Catalog (Setup → Records Catalog)."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "Saved searches have a type, criteria, result columns (with optional summaries) and an audience.",
+    "Set Main Line on transaction searches or you'll get one row per line.",
+    "Formulas use {fieldid} syntax with SQL functions like CASE, NVL and TO_CHAR.",
+    "run().each() caps at 4,000 results; use runPaged for more.",
+    "SuiteQL is read-only SQL over the analytics data source; use BUILTIN.DF for display values and ? params."
+   ],
+   "lab": {
+    "title": "Build four essential searches",
+    "goal": "Get fluent with criteria, results and summaries.",
+    "steps": [
+     "Open sales orders by customer: Transaction search, Type = Sales Order, Status = Pending Fulfillment, Main Line = true. Results: Customer, Number, Date, Amount.",
+     "Overdue invoices: Type = Invoice, Status = Open, Main Line = true, Due Date before 30 days ago. Add a formula column `{today} - {duedate}` for days overdue.",
+     "Items below reorder point: Item search, criteria with a formula `{quantityavailable} < {reorderpoint}` (Formula (Numeric) = 1 using CASE).",
+     "Sales by month: Transaction search, Type = Invoice, Main Line = true. Results: formula TO_CHAR({trandate}, 'YYYY-MM') with summary Group and Amount with summary Sum.",
+     "Remove Main Line from search 1 and watch the duplicate rows appear. Put it back.",
+     "Rewrite search 1 as SuiteQL and run it in a SuiteQL tool or via N/query in the debugger."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "Main Line = true",
+     "back": "One row per transaction (the header line only)."
+    },
+    {
+     "front": "Summary types",
+     "back": "Group, Count, Sum, Minimum, Maximum, Average."
+    },
+    {
+     "front": "run().each() limit",
+     "back": "4,000 results. Return true from the callback to continue."
+    },
+    {
+     "front": "getRange limit",
+     "back": "1,000 rows per call."
+    },
+    {
+     "front": "BUILTIN.DF()",
+     "back": "SuiteQL function returning a field's display value instead of its internal ID."
+    },
+    {
+     "front": "Is SuiteQL read-only?",
+     "back": "Yes. It can only SELECT."
+    },
+    {
+     "front": "Sales order type code in searches/SuiteQL",
+     "back": "SalesOrd"
+    },
+    {
+     "front": "search.lookupFields",
+     "back": "Cheap way to read a few field values from a single record."
+    }
+   ],
+   "questions": [
+    {
+     "q": "A transaction search shows each sales order 4 times. What's the most likely fix?",
+     "options": [
+      "Set Main Line = true",
+      "Add a Group summary to every column",
+      "Switch the search type to Customer",
+      "Remove the Status filter"
+     ],
+     "answer": 0,
+     "explain": "Without Main Line, transaction searches return the header plus every line."
+    },
+    {
+     "q": "You want only line-level detail (item, quantity) from transactions. Which criteria?",
+     "options": [
+      "Main Line = false",
+      "Main Line = true",
+      "Line Sequence = 0",
+      "Shipping Line = true"
+     ],
+     "answer": 0,
+     "explain": "Main Line = false excludes the header row and returns lines."
+    },
+    {
+     "q": "How many results can `run().each()` iterate before it stops?",
+     "options": [
+      "4,000",
+      "1,000",
+      "10,000",
+      "Unlimited"
+     ],
+     "answer": 0,
+     "explain": "Use `runPaged()` for larger result sets."
+    },
+    {
+     "q": "What's wrong with this callback?",
+     "options": [
+      "It doesn't return true, so iteration stops after the first result",
+      "each() requires an async function",
+      "getValue needs a fieldId object",
+      "Nothing; it processes all results"
+     ],
+     "answer": 0,
+     "explain": "each() continues only while the callback returns true.",
+     "code": "search.create({ type: 'customer', columns: ['companyname'] })\n  .run().each((r) => {\n    names.push(r.getValue('companyname'));\n  });"
+    },
+    {
+     "q": "What does `BUILTIN.DF(t.entity)` return in SuiteQL?",
+     "options": [
+      "The customer's display name",
+      "The customer's internal ID",
+      "The customer's default address",
+      "A boolean for whether entity is set"
+     ],
+     "answer": 0,
+     "explain": "DF = display field. It converts an ID into its display text."
+    },
+    {
+     "q": "Which statement about SuiteQL is true?",
+     "options": [
+      "It is read-only",
+      "It can UPDATE records in bulk",
+      "It requires SOAP web services",
+      "It only works in client scripts"
+     ],
+     "answer": 0,
+     "explain": "SuiteQL only queries. Writes go through records (N/record, REST, CSV import...)."
+    },
+    {
+     "q": "Which summary type would you use to total invoice amounts per customer?",
+     "options": [
+      "Group on customer, Sum on amount",
+      "Count on customer, Group on amount",
+      "Maximum on both",
+      "Average on customer"
+     ],
+     "answer": 0,
+     "explain": "Group the dimension and Sum the measure."
+    },
+    {
+     "q": "Which formula returns 'Big' when amount exceeds 1,000?",
+     "options": [
+      "CASE WHEN {amount} > 1000 THEN 'Big' END",
+      "IF(amount > 1000, 'Big')",
+      "{amount > 1000 ? 'Big'}",
+      "WHEN amount > 1000 RETURN 'Big'"
+     ],
+     "answer": 0,
+     "explain": "Saved search formulas use SQL CASE syntax with {fieldid} references."
+    },
+    {
+     "q": "What's the safest way to pass a user-supplied value into SuiteQL?",
+     "options": [
+      "A ? placeholder with the params array",
+      "String concatenation",
+      "Template literals",
+      "Encoding the value in base64"
+     ],
+     "answer": 0,
+     "explain": "Parameters avoid injection and quoting bugs."
+    },
+    {
+     "q": "What is the maximum number of rows `getRange()` returns per call?",
+     "options": [
+      "1,000",
+      "100",
+      "4,000",
+      "5,000"
+     ],
+     "answer": 0,
+     "explain": "Request ranges of up to 1,000 at a time."
+    },
+    {
+     "q": "Which is the cheapest way to read three field values from one known record?",
+     "options": [
+      "search.lookupFields",
+      "record.load",
+      "A saved search with runPaged",
+      "record.copy"
+     ],
+     "answer": 0,
+     "explain": "lookupFields costs 1 unit and doesn't load the full record."
+    },
+    {
+     "q": "Where can you browse SuiteQL table and column names?",
+     "options": [
+      "The Records Catalog",
+      "The File Cabinet",
+      "The Execution Log",
+      "Setup → Enable Features"
+     ],
+     "answer": 0,
+     "explain": "Setup → Records Catalog documents records, fields and joins for SuiteQL."
+    },
+    {
+     "q": "In SuiteQL, what `type` value identifies invoices in the transaction table?",
+     "options": [
+      "'CustInvc'",
+      "'invoice'",
+      "'Invoice'",
+      "'INV'"
+     ],
+     "answer": 0,
+     "explain": "Transaction type codes include SalesOrd, CustInvc, PurchOrd, VendBill, ItemShip."
+    },
+    {
+     "q": "How many rows does `query.runSuiteQL` return at most?",
+     "options": [
+      "5,000",
+      "1,000",
+      "4,000",
+      "Unlimited"
+     ],
+     "answer": 0,
+     "explain": "Use `runSuiteQLPaged` beyond that."
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "SuiteScript 2.1 Basics",
+   "subtitle": "Your first scripts",
+   "week": "Week 4",
+   "sections": [
+    {
+     "title": "What SuiteScript is",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "SuiteScript is JavaScript that NetSuite runs on its servers (or in the browser, for client scripts). Use **version 2.1**, which supports modern syntax: `const`/`let`, arrow functions, template literals, destructuring and more."
+      },
+      {
+       "t": "p",
+       "text": "Version 1.0 (functions like `nlapiLoadRecord`) is legacy. You'll see it in old accounts but shouldn't write new 1.0 code."
+      }
+     ]
+    },
+    {
+     "title": "Anatomy of a script file",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Every file uses AMD-style `define()` plus JSDoc tags that tell NetSuite what it is."
+      },
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType UserEventScript\n */\ndefine(['N/record', 'N/log'], (record, log) => {\n  const beforeSubmit = (context) => {\n    if (context.type !== context.UserEventType.CREATE) return;\n    const so = context.newRecord;\n    if (!so.getValue({ fieldId: 'memo' })) {\n      so.setValue({ fieldId: 'memo', value: 'Created by script' });\n    }\n  };\n  return { beforeSubmit };\n});"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "`@NApiVersion 2.1`: the SuiteScript version.",
+        "`@NScriptType`: the script type (UserEventScript, ClientScript, ScheduledScript, MapReduceScript, Suitelet, Restlet...).",
+        "`define([...modules], callback)`: loads N/ modules and returns an object of **entry points**.",
+        "The returned keys (`beforeSubmit`) must match the entry point names for that script type."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Getting a script running",
+     "blocks": [
+      {
+       "t": "steps",
+       "items": [
+        "**Upload the file** to the File Cabinet, usually under `SuiteScripts/`.",
+        "**Create the script record**: Customization → Scripting → Scripts → New, and pick the file. NetSuite reads the JSDoc tags.",
+        "**Create a deployment**: which record types it runs on, status (**Testing** or **Released**), log level, audience (roles) and Execute As Role."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Testing status runs the script only for its owner. Flip to Released when it's ready for everyone in the audience."
+      }
+     ]
+    },
+    {
+     "title": "Logging and debugging",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "`log.debug(title, details)` writes to the deployment's **Execution Log** tab. Levels are debug, audit, error and emergency, and the deployment's Log Level setting filters what gets saved."
+      },
+      {
+       "t": "code",
+       "text": "log.debug('Order loaded', { id: so.id, total: so.getValue('total') });\nlog.error('Failed to sync', e.message);"
+      },
+      {
+       "t": "warn",
+       "text": "If your log.debug calls don't appear, check the deployment's Log Level. If it's set to Error, debug and audit entries are dropped."
+      }
+     ]
+    },
+    {
+     "title": "Working with records",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "// Load, change, save\nconst cust = record.load({ type: record.Type.CUSTOMER, id: 123 });\ncust.setValue({ fieldId: 'comments', value: 'VIP' });\nconst id = cust.save();\n\n// Update body fields without loading the record\nrecord.submitFields({\n  type: record.Type.SALES_ORDER, id: 456,\n  values: { memo: 'Rush' }\n});\n\n// Create\nconst task = record.create({ type: record.Type.TASK });\ntask.setValue({ fieldId: 'title', value: 'Call customer' });\ntask.save();\n\n// Read sublist lines\nconst n = so.getLineCount({ sublistId: 'item' });\nfor (let i = 0; i < n; i++) {\n  const qty = so.getSublistValue({ sublistId: 'item', fieldId: 'quantity', line: i });\n}"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "Sublist lines are **zero-indexed** in 2.x.",
+        "`save()` returns the internal ID of the saved record.",
+        "`record.transform({ fromType, fromId, toType })` creates a record from another, e.g. sales order to invoice.",
+        "`record.copy` and `record.delete` do what they say."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Standard vs. dynamic mode",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**Standard mode** (the default) lets you set values in any order; sourcing and calculations happen on save. You set sublist values by line index with `setSublistValue`."
+      },
+      {
+       "t": "p",
+       "text": "**Dynamic mode** (`isDynamic: true`) behaves like a user in the UI: fields source as you set them, so order matters. Sublists are edited one line at a time."
+      },
+      {
+       "t": "code",
+       "text": "const so = record.create({ type: record.Type.SALES_ORDER, isDynamic: true });\nso.setValue({ fieldId: 'entity', value: 342 }); // sources terms, address...\nso.selectNewLine({ sublistId: 'item' });\nso.setCurrentSublistValue({ sublistId: 'item', fieldId: 'item', value: 77 });\nso.setCurrentSublistValue({ sublistId: 'item', fieldId: 'quantity', value: 2 });\nso.commitLine({ sublistId: 'item' });\nso.save();"
+      },
+      {
+       "t": "tip",
+       "text": "Use dynamic mode when you need sourced values (prices, tax, addresses) available before save, the way the UI shows them."
+      }
+     ]
+    },
+    {
+     "title": "Errors",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Wrap risky work in `try/catch` and throw meaningful errors with `N/error`. An uncaught error in beforeSubmit stops the save and shows the message to the user, which is exactly how you block bad data."
+      },
+      {
+       "t": "code",
+       "text": "throw error.create({\n  name: 'MISSING_PO',\n  message: 'Orders over $10,000 need a PO number.',\n  notifyOff: true\n});"
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "Write SuiteScript 2.1: AMD define(), @NApiVersion and @NScriptType JSDoc tags, returned entry points.",
+    "A script needs a file in the File Cabinet, a script record and a deployment.",
+    "Testing status runs only for the owner; Released runs for the audience.",
+    "log.debug writes to the Execution Log, filtered by the deployment's log level.",
+    "submitFields updates body fields without a load; sublist lines are zero-indexed.",
+    "Standard mode sources on save; dynamic mode sources as you go and uses select/commit for lines."
+   ],
+   "lab": {
+    "title": "Ship your first User Event",
+    "goal": "Upload, deploy and debug a real script.",
+    "steps": [
+     "Save the memo-defaulting script from this chapter as `ue_default_memo.js`.",
+     "Upload it to SuiteScripts in the File Cabinet.",
+     "Create a script record for it, then a deployment on Sales Order with status Testing and log level Debug.",
+     "Add a `log.debug('beforeSubmit', context.type)` line, re-upload and create a sales order with no memo.",
+     "Confirm the memo was set, then read the Execution Log on the deployment.",
+     "Edit the order and confirm the script exits early (type is EDIT, not CREATE).",
+     "Change it to throw an N/error when the order total is over 10,000 with no PO number (`otherrefnum`). Test that the save is blocked."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "@NApiVersion",
+     "back": "JSDoc tag declaring the SuiteScript version (use 2.1)."
+    },
+    {
+     "front": "@NScriptType",
+     "back": "JSDoc tag declaring the script type, like UserEventScript or ClientScript."
+    },
+    {
+     "front": "Three objects to run a script",
+     "back": "Script file in the File Cabinet, script record, script deployment."
+    },
+    {
+     "front": "Testing vs. Released",
+     "back": "Testing runs only for the script owner. Released runs for the deployment's audience."
+    },
+    {
+     "front": "Where do log.debug entries go?",
+     "back": "The Execution Log tab on the script deployment (and script record)."
+    },
+    {
+     "front": "record.submitFields",
+     "back": "Updates body fields on a record without loading it. Cheaper than load + save."
+    },
+    {
+     "front": "Dynamic mode sublist methods",
+     "back": "selectNewLine / selectLine, setCurrentSublistValue, commitLine."
+    },
+    {
+     "front": "What does record.save() return?",
+     "back": "The internal ID of the saved record."
+    },
+    {
+     "front": "Sublist line index base in 2.x",
+     "back": "Zero (first line is 0)."
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which JSDoc tag tells NetSuite the script type?",
+     "options": [
+      "@NScriptType",
+      "@NApiVersion",
+      "@NModuleScope",
+      "@NEntryPoint"
+     ],
+     "answer": 0,
+     "explain": "@NScriptType declares UserEventScript, ClientScript, etc. @NApiVersion sets 2.1."
+    },
+    {
+     "q": "Which three things are needed to run a server script?",
+     "options": [
+      "A file in the File Cabinet, a script record and a deployment",
+      "A file, a workflow and a role",
+      "A saved search, a script record and a form",
+      "Only the file in SuiteScripts"
+     ],
+     "answer": 0,
+     "explain": "The deployment decides where and for whom it runs."
+    },
+    {
+     "q": "A deployment is set to Testing. Who triggers the script?",
+     "options": [
+      "Only the script owner",
+      "Everyone in the audience",
+      "Only administrators",
+      "Nobody until it is Released"
+     ],
+     "answer": 0,
+     "explain": "Testing is a safe way to try a script in a shared account."
+    },
+    {
+     "q": "Your log.debug calls never show up, but log.error calls do. Why?",
+     "options": [
+      "The deployment's log level is set higher than Debug",
+      "log.debug only works in client scripts",
+      "Debug logs are deleted after an hour",
+      "log.debug needs three arguments"
+     ],
+     "answer": 0,
+     "explain": "Set the deployment's Log Level to Debug while developing."
+    },
+    {
+     "q": "What does this code do?",
+     "options": [
+      "Updates the memo without loading the full record",
+      "Loads the record and saves it twice",
+      "Creates a new sales order",
+      "Only works on custom records"
+     ],
+     "answer": 0,
+     "explain": "submitFields is the efficient way to update body fields.",
+     "code": "record.submitFields({ type: record.Type.SALES_ORDER, id: 456, values: { memo: 'Rush' } });"
+    },
+    {
+     "q": "What index is the first line of a sublist in SuiteScript 2.x?",
+     "options": [
+      "0",
+      "1",
+      "-1",
+      "It depends on the sublist"
+     ],
+     "answer": 0,
+     "explain": "2.x is zero-based. (1.0 was one-based, a common migration bug.)"
+    },
+    {
+     "q": "In dynamic mode, which call finalizes a sublist line?",
+     "options": [
+      "commitLine",
+      "saveLine",
+      "insertLine",
+      "setSublistValue"
+     ],
+     "answer": 0,
+     "explain": "selectNewLine → setCurrentSublistValue → commitLine."
+    },
+    {
+     "q": "When would you choose dynamic mode?",
+     "options": [
+      "When you need sourced values to appear as you set fields, like in the UI",
+      "When you want the script to use fewer units",
+      "When updating only one body field",
+      "When running in a client script"
+     ],
+     "answer": 0,
+     "explain": "Dynamic mode sources as you go; standard mode sources on save."
+    },
+    {
+     "q": "What's missing from this script file?",
+     "options": [
+      "The function must be returned as an entry point",
+      "A semicolon after define",
+      "The N/log module is required in every script",
+      "A @NModuleScope tag"
+     ],
+     "answer": 0,
+     "explain": "NetSuite calls only the entry points the module returns: `return { beforeSubmit };`",
+     "code": "/**\n * @NApiVersion 2.1\n * @NScriptType UserEventScript\n */\ndefine(['N/record'], (record) => {\n  const beforeSubmit = (context) => { /* ... */ };\n});"
+    },
+    {
+     "q": "How do you block a record from saving with a clear message in beforeSubmit?",
+     "options": [
+      "Throw an error (e.g. with N/error)",
+      "Return false",
+      "Call context.cancel()",
+      "Set newRecord to null"
+     ],
+     "answer": 0,
+     "explain": "An uncaught error in beforeSubmit stops the save and shows the message."
+    },
+    {
+     "q": "Which method creates an invoice from an existing sales order?",
+     "options": [
+      "record.transform",
+      "record.copy",
+      "record.create with createdfrom set",
+      "record.convert"
+     ],
+     "answer": 0,
+     "explain": "transform({ fromType: 'salesorder', fromId, toType: 'invoice' })."
+    },
+    {
+     "q": "Which SuiteScript version should new code use?",
+     "options": [
+      "2.1",
+      "1.0",
+      "2.0 only",
+      "3.0"
+     ],
+     "answer": 0,
+     "explain": "2.1 supports modern ES syntax. 1.0 is legacy."
+    },
+    {
+     "q": "What does `cust.save()` return?",
+     "options": [
+      "The record's internal ID",
+      "true or false",
+      "The record object",
+      "Nothing"
+     ],
+     "answer": 0,
+     "explain": "Useful for linking new records together."
+    },
+    {
+     "q": "Where is the right place to look for a script's log output?",
+     "options": [
+      "The Execution Log tab on the deployment",
+      "The browser console only",
+      "System Notes on the record",
+      "The File Cabinet"
+     ],
+     "answer": 0,
+     "explain": "Server-side logs go to the Execution Log. Client script logs also appear there."
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Script Types & Entry Points",
+   "subtitle": "Picking the right tool",
+   "week": "Week 4",
+   "sections": [
+    {
+     "title": "The script type decides when your code runs",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Each script type has its own **entry points**: the function names NetSuite calls. You return them from `define()`."
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Type",
+         "Runs",
+         "Entry points",
+         "Typical use"
+        ],
+        [
+         "User Event",
+         "Server, when a record is loaded or saved",
+         "beforeLoad, beforeSubmit, afterSubmit",
+         "Validate or default on save, add buttons, create related records"
+        ],
+        [
+         "Client",
+         "Browser, on the form",
+         "pageInit, fieldChanged, validateField, saveRecord...",
+         "Live UI behavior and validation"
+        ],
+        [
+         "Scheduled",
+         "Server, on a schedule or queued",
+         "execute",
+         "Batch jobs with small volumes"
+        ],
+        [
+         "Map/Reduce",
+         "Server, in parallel stages",
+         "getInputData, map, reduce, summarize",
+         "Processing thousands of records"
+        ],
+        [
+         "Suitelet",
+         "Server, at its own URL",
+         "onRequest",
+         "Custom pages and internal tools"
+        ],
+        [
+         "RESTlet",
+         "Server, HTTP endpoint",
+         "get, post, put, delete",
+         "Custom APIs"
+        ],
+        [
+         "Workflow Action",
+         "Server, from SuiteFlow",
+         "onAction",
+         "Logic a workflow can't express"
+        ],
+        [
+         "Mass Update",
+         "Server, per record in a mass update",
+         "each",
+         "Bulk fixes from the UI"
+        ],
+        [
+         "Portlet",
+         "Dashboard",
+         "render",
+         "Dashboard widgets"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "User Event scripts",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "**beforeLoad(context)**: before the record is shown. Add buttons or fields with `context.form`, or set defaults on create.",
+        "**beforeSubmit(context)**: before the record is written. Change `context.newRecord` or throw to block the save. On create, the record has **no ID yet**.",
+        "**afterSubmit(context)**: after the record is committed. The ID exists; use it to create or update **other** records. Changing `newRecord` here does nothing."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "`context.type` tells you the event: `CREATE`, `EDIT`, `DELETE`, `XEDIT` (inline edit or submitFields), `COPY`, `VIEW` and others. `context.oldRecord` holds the values before an edit."
+      },
+      {
+       "t": "code",
+       "text": "const afterSubmit = (context) => {\n  if (context.type !== context.UserEventType.CREATE) return;\n  const so = context.newRecord;\n  record.create({ type: record.Type.TASK })\n    .setValue({ fieldId: 'title', value: `Welcome call for ${so.id}` })\n    .setValue({ fieldId: 'transaction', value: so.id })\n    .save();\n};"
+      },
+      {
+       "t": "warn",
+       "text": "A record saved by another User Event script does NOT trigger User Events. This prevents infinite loops but surprises people. Also, on XEDIT newRecord only contains the changed fields."
+      }
+     ]
+    },
+    {
+     "title": "Client scripts",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Client scripts run in the browser on a form. They get `context.currentRecord` (from N/currentRecord)."
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Entry point",
+         "Fires when",
+         "Return"
+        ],
+        [
+         "pageInit",
+         "The form loads",
+         "—"
+        ],
+        [
+         "fieldChanged",
+         "A field value changes",
+         "—"
+        ],
+        [
+         "postSourcing",
+         "Sourcing finishes after a field change",
+         "—"
+        ],
+        [
+         "validateField",
+         "Before a field change is accepted",
+         "true to accept, false to reject"
+        ],
+        [
+         "lineInit",
+         "A sublist line is selected",
+         "—"
+        ],
+        [
+         "validateLine",
+         "Before a line is added",
+         "true / false"
+        ],
+        [
+         "sublistChanged",
+         "A sublist is changed",
+         "—"
+        ],
+        [
+         "saveRecord",
+         "The user clicks Save",
+         "true to save, false to block"
+        ]
+       ]
+      },
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType ClientScript\n */\ndefine(['N/ui/dialog'], (dialog) => {\n  const saveRecord = (context) => {\n    const rec = context.currentRecord;\n    if (rec.getValue('custbody_rush_order') && !rec.getValue('memo')) {\n      dialog.alert({ title: 'Memo needed', message: 'Explain why this is a rush.' });\n      return false;\n    }\n    return true;\n  };\n  return { saveRecord };\n});"
+      },
+      {
+       "t": "warn",
+       "text": "Client validation is convenience, not security. Imports, web services and other scripts bypass the browser. Enforce rules that matter in a User Event too."
+      }
+     ]
+    },
+    {
+     "title": "Choosing the right type",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "Change the record being saved → **User Event beforeSubmit**.",
+        "Touch other records after a save → **User Event afterSubmit**.",
+        "Instant feedback while a user types → **Client script**.",
+        "Process a few hundred records nightly → **Scheduled**.",
+        "Process thousands of records → **Map/Reduce**.",
+        "A custom page or tool → **Suitelet**.",
+        "Another system needs to call NetSuite with custom logic → **RESTlet**."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "If a script behaves differently from CSV imports or integrations, check `runtime.executionContext` and the deployment's execution context settings."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "User Event: beforeLoad (form), beforeSubmit (change or block the record), afterSubmit (touch other records).",
+    "On create, beforeSubmit has no ID yet; afterSubmit does.",
+    "Records saved by another User Event script don't trigger User Events.",
+    "Client validateField, validateLine and saveRecord must return true or false.",
+    "Client validation can be bypassed; enforce critical rules on the server.",
+    "Map/Reduce for volume, Scheduled for small batches, Suitelet for pages, RESTlet for APIs."
+   ],
+   "lab": {
+    "title": "One record, three scripts",
+    "goal": "Feel the difference between UE stages and client entry points.",
+    "steps": [
+     "Write a User Event with all three entry points that logs `context.type` and whether `newRecord.id` is set.",
+     "Deploy it on Sales Order (Testing) and create, edit, inline-edit and view an order. Compare the logs.",
+     "In beforeLoad, add a button with `context.form.addButton({ id: 'custpage_hello', label: 'Hello' })` on VIEW only.",
+     "In afterSubmit on CREATE, create a follow-up Task linked to the order.",
+     "Write a client script with validateField that rejects a negative `custbody_discount_pct`, and saveRecord that blocks rush orders without a memo.",
+     "Import a sales order by CSV and observe which scripts run and which don't."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "beforeLoad",
+     "back": "UE entry point before the record is displayed. Use context.form to add buttons/fields."
+    },
+    {
+     "front": "beforeSubmit",
+     "back": "UE entry point before the record is written. Modify newRecord or throw to block."
+    },
+    {
+     "front": "afterSubmit",
+     "back": "UE entry point after commit. The ID exists. Update other records here."
+    },
+    {
+     "front": "XEDIT",
+     "back": "UserEventType for inline edits and submitFields; newRecord has only changed fields."
+    },
+    {
+     "front": "validateField return value",
+     "back": "true to accept the change, false to reject it."
+    },
+    {
+     "front": "saveRecord return value",
+     "back": "true lets the save continue, false blocks it."
+    },
+    {
+     "front": "Map/Reduce entry points",
+     "back": "getInputData, map, reduce, summarize."
+    },
+    {
+     "front": "Suitelet entry point",
+     "back": "onRequest(context)."
+    },
+    {
+     "front": "RESTlet entry points",
+     "back": "get, post, put, delete."
+    },
+    {
+     "front": "Workflow Action entry point",
+     "back": "onAction(context)."
+    }
+   ],
+   "questions": [
+    {
+     "q": "You need to default a field on the record being saved. Which entry point?",
+     "options": [
+      "beforeSubmit",
+      "afterSubmit",
+      "beforeLoad",
+      "pageInit"
+     ],
+     "answer": 0,
+     "explain": "beforeSubmit can still modify newRecord before it's written."
+    },
+    {
+     "q": "In beforeSubmit on CREATE, what is `context.newRecord.id`?",
+     "options": [
+      "Not set yet, because the record hasn't been saved",
+      "The next available internal ID",
+      "0",
+      "The ID of the source transaction"
+     ],
+     "answer": 0,
+     "explain": "Use afterSubmit when you need the new record's ID."
+    },
+    {
+     "q": "A script sets a field on `context.newRecord` in afterSubmit but the change never saves. Why?",
+     "options": [
+      "The record is already committed; afterSubmit changes to newRecord are ignored",
+      "afterSubmit is read-only for custom fields only",
+      "setValue needs isDynamic",
+      "The deployment is in Testing"
+     ],
+     "answer": 0,
+     "explain": "Use record.submitFields or load/save to change it after commit."
+    },
+    {
+     "q": "Record A's User Event saves Record B. Record B has its own User Event. Does B's run?",
+     "options": [
+      "No; records saved by a User Event script don't trigger User Events",
+      "Yes, always",
+      "Only beforeSubmit runs",
+      "Only if B is a custom record"
+     ],
+     "answer": 0,
+     "explain": "This rule prevents infinite loops. Workflows or a scheduled/MR script can be alternatives."
+    },
+    {
+     "q": "Which entry point lets you add a custom button to a form?",
+     "options": [
+      "beforeLoad (via context.form.addButton)",
+      "afterSubmit",
+      "saveRecord",
+      "validateLine"
+     ],
+     "answer": 0,
+     "explain": "beforeLoad gets the form object (N/ui/serverWidget) before it renders."
+    },
+    {
+     "q": "What must a client `saveRecord` function return to allow the save?",
+     "options": [
+      "true",
+      "Nothing",
+      "The record ID",
+      "context.currentRecord"
+     ],
+     "answer": 0,
+     "explain": "Returning false (or nothing) blocks the save."
+    },
+    {
+     "q": "A client script prevents negative quantities, but bad data still arrives via CSV import. Why?",
+     "options": [
+      "Client scripts only run in the browser; imports bypass them",
+      "CSV imports ignore all scripts",
+      "validateField only runs on create",
+      "The client script needs Released status"
+     ],
+     "answer": 0,
+     "explain": "Enforce critical rules in a User Event, which runs for imports and web services too."
+    },
+    {
+     "q": "What does `context.type === 'xedit'` mean in a User Event?",
+     "options": [
+      "The record was inline-edited or updated via submitFields",
+      "The record was exported",
+      "The record was edited by an external system only",
+      "The record is being deleted"
+     ],
+     "answer": 0,
+     "explain": "On XEDIT, newRecord carries only the changed fields."
+    },
+    {
+     "q": "You need to process 50,000 invoices. Which script type?",
+     "options": [
+      "Map/Reduce",
+      "Scheduled",
+      "User Event",
+      "Client"
+     ],
+     "answer": 0,
+     "explain": "Map/Reduce handles volume, parallelism and governance yielding."
+    },
+    {
+     "q": "Which script type gives you a custom page at its own URL?",
+     "options": [
+      "Suitelet",
+      "RESTlet",
+      "Portlet",
+      "Mass Update"
+     ],
+     "answer": 0,
+     "explain": "Suitelets serve forms, lists or raw HTML at an internal or external URL."
+    },
+    {
+     "q": "Which client entry point fires after sourcing completes for a changed field?",
+     "options": [
+      "postSourcing",
+      "fieldChanged",
+      "pageInit",
+      "lineInit"
+     ],
+     "answer": 0,
+     "explain": "fieldChanged fires immediately; postSourcing fires once dependent fields have sourced."
+    },
+    {
+     "q": "Which entry point does a Workflow Action script use?",
+     "options": [
+      "onAction",
+      "execute",
+      "each",
+      "onRequest"
+     ],
+     "answer": 0,
+     "explain": "Workflow Action scripts run when a workflow calls them via a Custom Action."
+    },
+    {
+     "q": "Which object holds the field values from before an edit in a User Event?",
+     "options": [
+      "context.oldRecord",
+      "context.previousRecord",
+      "context.newRecord.original",
+      "context.form"
+     ],
+     "answer": 0,
+     "explain": "Compare oldRecord and newRecord to detect what changed."
+    },
+    {
+     "q": "What's wrong with this validateField?",
+     "options": [
+      "It never returns true, so every field change is rejected",
+      "validateField can't read fieldId",
+      "It should use getText",
+      "Nothing is wrong"
+     ],
+     "answer": 0,
+     "explain": "Always return true when the value is acceptable.",
+     "code": "const validateField = (context) => {\n  if (context.fieldId === 'custbody_discount_pct') {\n    return context.currentRecord.getValue('custbody_discount_pct') >= 0;\n  }\n};"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "The N/ Modules",
+   "subtitle": "Your SuiteScript toolbox",
+   "week": "Week 5",
+   "sections": [
+    {
+     "title": "Modules at a glance",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Module",
+         "Purpose"
+        ],
+        [
+         "N/record",
+         "Create, load, copy, transform, save, delete records; submitFields"
+        ],
+        [
+         "N/search",
+         "Build or load saved searches, page results, lookupFields"
+        ],
+        [
+         "N/query",
+         "SuiteQL and the query builder API"
+        ],
+        [
+         "N/log",
+         "Execution log: debug, audit, error, emergency"
+        ],
+        [
+         "N/runtime",
+         "Current user, script parameters, remaining governance, execution context"
+        ],
+        [
+         "N/ui/serverWidget",
+         "Build Suitelet forms and lists; add fields/buttons in beforeLoad"
+        ],
+        [
+         "N/ui/dialog, N/ui/message",
+         "Client-side alerts and banners"
+        ],
+        [
+         "N/currentRecord",
+         "The record open in a client script"
+        ],
+        [
+         "N/https, N/http",
+         "Call external APIs"
+        ],
+        [
+         "N/file",
+         "Read/write File Cabinet files (CSV, JSON, PDF)"
+        ],
+        [
+         "N/email, N/render",
+         "Send email; render PDFs and templates"
+        ],
+        [
+         "N/task",
+         "Queue scheduled, map/reduce, CSV import and search tasks"
+        ],
+        [
+         "N/format",
+         "Convert dates and numbers between strings and objects"
+        ],
+        [
+         "N/error",
+         "Create proper NetSuite errors"
+        ],
+        [
+         "N/url, N/redirect",
+         "Build URLs to records/Suitelets; redirect users"
+        ],
+        [
+         "N/cache",
+         "Store values across executions cheaply"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "N/runtime: who, where and how much",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "const script = runtime.getCurrentScript();\nconst threshold = script.getParameter({ name: 'custscript_threshold' });\nconst left = script.getRemainingUsage();\n\nconst user = runtime.getCurrentUser(); // user.id, user.role, user.subsidiary\nif (runtime.executionContext === runtime.ContextType.CSV_IMPORT) { /* ... */ }"
+      },
+      {
+       "t": "p",
+       "text": "**Script parameters** (IDs start with `custscript_`) are fields on the script record whose values are set per deployment. Use them instead of hard-coding IDs, emails and thresholds."
+      }
+     ]
+    },
+    {
+     "title": "N/https: calling the outside world",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "const res = https.post({\n  url: 'https://api.example.com/orders',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ id: so.id, total: so.getValue('total') })\n});\nif (res.code !== 200) throw error.create({ name: 'SYNC_FAILED', message: res.body });\nconst data = JSON.parse(res.body);"
+      },
+      {
+       "t": "tip",
+       "text": "Never hard-code secrets in a script. Store API keys as API Secrets (Setup → Company → API Secrets) or in a protected custom record, and use https.createSecretKey where supported."
+      }
+     ]
+    },
+    {
+     "title": "N/file and N/email",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "const f = file.create({\n  name: 'open_orders.csv', fileType: file.Type.CSV,\n  contents: 'id,total\\n1,100\\n', folder: 123\n});\nconst fileId = f.save();\n\nemail.send({\n  author: -5,                 // an employee internal ID\n  recipients: ['ops@example.com'],\n  subject: 'Open orders',\n  body: 'Attached.',\n  attachments: [file.load({ id: fileId })]\n});"
+      }
+     ]
+    },
+    {
+     "title": "N/ui/serverWidget: building pages",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "const form = serverWidget.createForm({ title: 'Quick Task' });\nform.addField({ id: 'custpage_title', type: serverWidget.FieldType.TEXT, label: 'Title' });\nform.addSubmitButton({ label: 'Create' });\ncontext.response.writePage(form);"
+      },
+      {
+       "t": "p",
+       "text": "Fields you add in Suitelets or beforeLoad must start with `custpage_`. They exist only on the page and aren't stored unless you save them somewhere yourself."
+      }
+     ]
+    },
+    {
+     "title": "N/task, N/format, N/cache",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "// Queue a Map/Reduce from another script\ntask.create({\n  taskType: task.TaskType.MAP_REDUCE,\n  scriptId: 'customscript_mr_sync',\n  deploymentId: 'customdeploy_mr_sync',\n  params: { custscript_since: '2026-01-01' }\n}).submit();\n\n// Dates: string <-> Date in the user's format\nconst d = format.parse({ value: '10/16/2026', type: format.Type.DATE });\nconst s = format.format({ value: new Date(), type: format.Type.DATE });\n\n// Cache an expensive lookup\nconst c = cache.getCache({ name: 'rates', scope: cache.Scope.PRIVATE });\nconst rate = c.get({ key: 'EUR', loader: () => fetchRate('EUR'), ttl: 3600 });"
+      },
+      {
+       "t": "warn",
+       "text": "Don't build date strings by hand. Users have different date formats; N/format handles them."
+      }
+     ]
+    },
+    {
+     "title": "Client vs. server modules",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Some modules only work in one place. `N/currentRecord`, `N/ui/dialog` and `N/ui/message` are client-side. `N/task`, `N/file` writes and `N/email` are server-side. Check each module's \"Supported Script Types\" in the Help Center."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "N/record and N/search are the workhorses; N/query adds SuiteQL.",
+    "N/runtime gives parameters (custscript_), user info, execution context and remaining usage.",
+    "Use script parameters instead of hard-coded IDs and thresholds.",
+    "N/https for outbound calls; never hard-code secrets.",
+    "Fields added in Suitelets/beforeLoad start with custpage_.",
+    "N/task queues Map/Reduce and scheduled scripts; N/format handles dates; N/cache saves repeat lookups."
+   ],
+   "lab": {
+    "title": "Build a daily open-orders email",
+    "goal": "Combine search, file, email and runtime.",
+    "steps": [
+     "Create a Scheduled script with parameters `custscript_recipient` (email) and `custscript_folder` (integer).",
+     "Search open sales orders (Pending Fulfillment, Main Line true) and build a CSV string.",
+     "Save it to the folder from the parameter with N/file.",
+     "Email it with N/email, attaching the file.",
+     "Log `getRemainingUsage()` at the start and end to see what each step cost.",
+     "Deploy it with a daily schedule in Testing, then run it once with Save & Execute."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "custscript_",
+     "back": "Prefix for script parameter IDs."
+    },
+    {
+     "front": "runtime.getCurrentScript().getRemainingUsage()",
+     "back": "Returns the governance units left in this execution."
+    },
+    {
+     "front": "custpage_",
+     "back": "Prefix for fields/sublists added on the fly in Suitelets or beforeLoad. Not stored."
+    },
+    {
+     "front": "N/task",
+     "back": "Queues scheduled, map/reduce, CSV import and search tasks."
+    },
+    {
+     "front": "N/format",
+     "back": "Converts dates/numbers between strings and objects using user preferences."
+    },
+    {
+     "front": "N/cache",
+     "back": "Stores values across executions to avoid repeat lookups."
+    },
+    {
+     "front": "Client-only modules",
+     "back": "N/currentRecord, N/ui/dialog, N/ui/message."
+    },
+    {
+     "front": "runtime.executionContext",
+     "back": "What triggered the script: USER_INTERFACE, CSV_IMPORT, WEBSERVICES, SCHEDULED..."
+    }
+   ],
+   "questions": [
+    {
+     "q": "Which module tells you how many governance units remain?",
+     "options": [
+      "N/runtime",
+      "N/log",
+      "N/task",
+      "N/error"
+     ],
+     "answer": 0,
+     "explain": "runtime.getCurrentScript().getRemainingUsage()."
+    },
+    {
+     "q": "Script parameter IDs start with which prefix?",
+     "options": [
+      "custscript_",
+      "custparam_",
+      "custpage_",
+      "customscript_"
+     ],
+     "answer": 0,
+     "explain": "customscript_ is the script record; custscript_ is a parameter on it."
+    },
+    {
+     "q": "You add a field to a Suitelet form. What must its ID start with?",
+     "options": [
+      "custpage_",
+      "custbody_",
+      "custscript_",
+      "custform_"
+     ],
+     "answer": 0,
+     "explain": "custpage_ fields live only on the rendered page."
+    },
+    {
+     "q": "Which module do you use to call an external REST API?",
+     "options": [
+      "N/https",
+      "N/url",
+      "N/redirect",
+      "N/query"
+     ],
+     "answer": 0,
+     "explain": "N/https (or N/http) makes outbound requests."
+    },
+    {
+     "q": "Which module should parse a date string typed in the user's preferred format?",
+     "options": [
+      "N/format",
+      "N/runtime",
+      "Native Date.parse",
+      "N/util"
+     ],
+     "answer": 0,
+     "explain": "format.parse respects the user's date preference."
+    },
+    {
+     "q": "A User Event needs to start a Map/Reduce job. Which module?",
+     "options": [
+      "N/task",
+      "N/record",
+      "N/runtime",
+      "N/workflow"
+     ],
+     "answer": 0,
+     "explain": "task.create({ taskType: task.TaskType.MAP_REDUCE, ... }).submit()."
+    },
+    {
+     "q": "Which module is ONLY available in client scripts?",
+     "options": [
+      "N/currentRecord",
+      "N/record",
+      "N/search",
+      "N/log"
+     ],
+     "answer": 0,
+     "explain": "N/currentRecord represents the form open in the browser."
+    },
+    {
+     "q": "What's the problem with this code?",
+     "options": [
+      "The API key is hard-coded in the script",
+      "https.get can't send headers",
+      "headers must be an array",
+      "Authorization headers are blocked"
+     ],
+     "answer": 0,
+     "explain": "Store secrets in API Secrets or a protected record, not in the file anyone with File Cabinet access can read.",
+     "code": "https.get({\n  url: 'https://api.example.com/rates',\n  headers: { Authorization: 'Bearer sk_live_9f8e7d6c' }\n});"
+    },
+    {
+     "q": "How do you detect that a User Event was triggered by a CSV import?",
+     "options": [
+      "runtime.executionContext === runtime.ContextType.CSV_IMPORT",
+      "context.type === 'csv'",
+      "context.newRecord.isImport",
+      "log.getContext() === 'import'"
+     ],
+     "answer": 0,
+     "explain": "executionContext tells you what kicked off the script."
+    },
+    {
+     "q": "Which module sends email from a script?",
+     "options": [
+      "N/email",
+      "N/https",
+      "N/render",
+      "N/message"
+     ],
+     "answer": 0,
+     "explain": "N/render builds PDFs/templates; N/email sends."
+    },
+    {
+     "q": "Why use script parameters instead of hard-coded values?",
+     "options": [
+      "Admins can change values per deployment without editing code",
+      "Parameters use fewer governance units",
+      "Hard-coded values are not allowed in 2.1",
+      "Parameters are encrypted automatically"
+     ],
+     "answer": 0,
+     "explain": "Different deployments (and sandbox vs. production) can use different values."
+    },
+    {
+     "q": "Which module builds a link to a record or Suitelet?",
+     "options": [
+      "N/url",
+      "N/redirect",
+      "N/https",
+      "N/file"
+     ],
+     "answer": 0,
+     "explain": "url.resolveRecord / url.resolveScript build links; N/redirect sends the user there."
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Governance & Data at Scale",
+   "subtitle": "Scheduled and Map/Reduce scripts",
+   "week": "Week 5",
+   "sections": [
+    {
+     "title": "Why governance exists",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "NetSuite is multi-tenant: your scripts share servers with other companies. So every execution gets a budget of **usage units**. Each API call costs units, and running out throws `SSS_USAGE_LIMIT_EXCEEDED`."
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Script type",
+         "Units per execution"
+        ],
+        [
+         "Client, User Event, Suitelet, Portlet, Workflow Action",
+         "1,000"
+        ],
+        [
+         "RESTlet",
+         "5,000"
+        ],
+        [
+         "Scheduled",
+         "10,000"
+        ],
+        [
+         "Map/Reduce",
+         "getInputData 10,000; map 1,000; reduce 5,000; summarize 10,000 (per invocation)"
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "text": "There are also time limits and instruction-count limits, not just units."
+      }
+     ]
+    },
+    {
+     "title": "What things cost",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Operation",
+         "Transaction",
+         "Custom record",
+         "Entity"
+        ],
+        [
+         "record.load",
+         "10",
+         "2",
+         "5"
+        ],
+        [
+         "record.save",
+         "20",
+         "4",
+         "10"
+        ],
+        [
+         "record.submitFields",
+         "10",
+         "2",
+         "5"
+        ],
+        [
+         "record.delete",
+         "20",
+         "4",
+         "10"
+        ]
+       ]
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "`search.lookupFields`: 1 unit.",
+        "A search page / `run().each` / `runPaged().fetch`: about 5–10 units.",
+        "`query.runSuiteQL`: 10 units.",
+        "`email.send`: 20 units. `https.get/post`: 10 units. `task.submit`: 20 units."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Unit costs change between releases. Check the Help Center for current values."
+      }
+     ]
+    },
+    {
+     "title": "Habits that save units",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "Use `search.lookupFields` instead of loading a record to read a few values.",
+        "Use `submitFields` instead of load + save for body fields.",
+        "Never load records inside a loop when one search can fetch everything.",
+        "Move anything over a few hundred records into Map/Reduce.",
+        "Check `getRemainingUsage()` in long loops and stop gracefully."
+       ]
+      },
+      {
+       "t": "code",
+       "text": "// Bad: 10 units per record + 20 per save, inside a loop\nids.forEach((id) => {\n  const so = record.load({ type: 'salesorder', id });\n  so.setValue({ fieldId: 'memo', value: 'Reviewed' });\n  so.save();\n});\n\n// Better: 10 units per record, no load\nids.forEach((id) => record.submitFields({\n  type: 'salesorder', id, values: { memo: 'Reviewed' }\n}));"
+      }
+     ]
+    },
+    {
+     "title": "Scheduled scripts",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A Scheduled script has one entry point, `execute(context)`. Deploy it on a schedule (daily, weekly, every 15 minutes...) or queue it with `N/task`. It gets 10,000 units and does **not** yield automatically."
+      },
+      {
+       "t": "p",
+       "text": "Good for small nightly jobs. If volume might grow, write it as Map/Reduce from the start."
+      }
+     ]
+    },
+    {
+     "title": "Map/Reduce: the four stages",
+     "blocks": [
+      {
+       "t": "steps",
+       "items": [
+        "**getInputData()**: return the data to process: an array, an object, a search object or reference, or a SuiteQL query.",
+        "**map(context)**: called once per input item. `context.key` and `context.value` (a JSON string). Write key/value pairs with `context.write()`.",
+        "**reduce(context)**: called once per unique key written by map. `context.values` is an array of strings.",
+        "**summarize(summary)**: runs once at the end. Read errors and totals, send a report."
+       ]
+      },
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType MapReduceScript\n */\ndefine(['N/search', 'N/record', 'N/log'], (search, record, log) => {\n  const getInputData = () => search.create({\n    type: 'invoice',\n    filters: [['mainline', 'is', 'T'], 'AND', ['status', 'anyof', 'CustInvc:A']],\n    columns: ['entity', 'amountremaining']\n  });\n\n  const map = (context) => {\n    const r = JSON.parse(context.value);\n    context.write({ key: r.values.entity.value, value: r.values.amountremaining });\n  };\n\n  const reduce = (context) => {\n    const total = context.values.reduce((s, v) => s + Number(v), 0);\n    record.submitFields({ type: 'customer', id: context.key,\n      values: { custentity_open_balance: total } });\n  };\n\n  const summarize = (summary) => {\n    summary.mapSummary.errors.iterator().each((key, err) => {\n      log.error(`map ${key}`, err);\n      return true;\n    });\n    log.audit('Done', `Usage: ${summary.usage}, yields: ${summary.yields}`);\n  };\n\n  return { getInputData, map, reduce, summarize };\n});"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "Map/Reduce **yields automatically** between invocations, so total volume isn't limited by one budget.",
+        "map and reduce invocations can run **in parallel** (concurrency is set on the deployment, limited by your processors).",
+        "You can skip map or reduce, but not both.",
+        "An error in one map call doesn't stop the others; read errors in summarize."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Choosing Scheduled vs. Map/Reduce",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "",
+         "Scheduled",
+         "Map/Reduce"
+        ],
+        [
+         "Volume",
+         "Small (hundreds)",
+         "Large (thousands+)"
+        ],
+        [
+         "Governance",
+         "10,000 units total",
+         "Per-stage budgets, auto-yield"
+        ],
+        [
+         "Parallelism",
+         "No",
+         "Yes"
+        ],
+        [
+         "Error isolation",
+         "One error can stop the run",
+         "Per key; reported in summarize"
+        ],
+        [
+         "Complexity",
+         "Simple",
+         "More structure"
+        ]
+       ]
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "Every execution gets a unit budget; running out throws SSS_USAGE_LIMIT_EXCEEDED.",
+    "Client/UE/Suitelet 1,000; RESTlet 5,000; Scheduled 10,000; Map/Reduce per stage.",
+    "Transactions cost most (load 10, save 20); lookupFields costs 1.",
+    "Don't load records in loops; use searches, lookupFields and submitFields.",
+    "Map/Reduce: getInputData → map → reduce → summarize; auto-yields and runs in parallel.",
+    "Read per-key errors in summarize via mapSummary.errors / reduceSummary.errors."
+   ],
+   "lab": {
+    "title": "Scheduled to Map/Reduce",
+    "goal": "Feel why Map/Reduce exists.",
+    "steps": [
+     "Write a Scheduled script that loads every open invoice and sets a custom checkbox with load + save. Log remaining usage after each record.",
+     "Run it in a sandbox with lots of invoices and watch it hit SSS_USAGE_LIMIT_EXCEEDED.",
+     "Rewrite it with submitFields and note how much further it gets.",
+     "Rewrite it as Map/Reduce: getInputData returns the search, map calls submitFields.",
+     "Add a summarize that logs usage, yields and any map errors.",
+     "Bonus: make reduce group open balance by customer and write it to a custom entity field."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "SSS_USAGE_LIMIT_EXCEEDED",
+     "back": "Error thrown when a script runs out of governance units."
+    },
+    {
+     "front": "User Event / Client / Suitelet budget",
+     "back": "1,000 units per execution."
+    },
+    {
+     "front": "RESTlet budget",
+     "back": "5,000 units per execution."
+    },
+    {
+     "front": "Scheduled budget",
+     "back": "10,000 units per execution."
+    },
+    {
+     "front": "record.load on a transaction",
+     "back": "10 units. Save is 20."
+    },
+    {
+     "front": "search.lookupFields cost",
+     "back": "1 unit."
+    },
+    {
+     "front": "Map/Reduce stages",
+     "back": "getInputData, map, reduce, summarize."
+    },
+    {
+     "front": "map context",
+     "back": "context.key, context.value (JSON string), context.write({ key, value })."
+    },
+    {
+     "front": "reduce context",
+     "back": "context.key and context.values (array of strings)."
+    },
+    {
+     "front": "Does Map/Reduce yield automatically?",
+     "back": "Yes, between invocations. Scheduled scripts don't."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What happens when a script runs out of usage units?",
+     "options": [
+      "It throws SSS_USAGE_LIMIT_EXCEEDED",
+      "It pauses until the next hour",
+      "It switches to Testing status",
+      "NetSuite buys more units automatically"
+     ],
+     "answer": 0,
+     "explain": "Design scripts to stay under budget or move to Map/Reduce."
+    },
+    {
+     "q": "How many units does a User Event script get per execution?",
+     "options": [
+      "1,000",
+      "5,000",
+      "10,000",
+      "Unlimited"
+     ],
+     "answer": 0,
+     "explain": "Client, User Event, Suitelet, Portlet and Workflow Action scripts get 1,000."
+    },
+    {
+     "q": "How many units does a RESTlet get per execution?",
+     "options": [
+      "5,000",
+      "1,000",
+      "10,000",
+      "2,000"
+     ],
+     "answer": 0,
+     "explain": "RESTlets get 5,000."
+    },
+    {
+     "q": "Roughly how many units do record.load + record.save cost on a sales order?",
+     "options": [
+      "30 (10 + 20)",
+      "2",
+      "10",
+      "100"
+     ],
+     "answer": 0,
+     "explain": "Transactions are the most expensive records."
+    },
+    {
+     "q": "Which is the cheapest way to read a couple of fields from a record?",
+     "options": [
+      "search.lookupFields (1 unit)",
+      "record.load (10 units)",
+      "record.copy",
+      "A full saved search per field"
+     ],
+     "answer": 0,
+     "explain": "lookupFields is the go-to for quick reads."
+    },
+    {
+     "q": "What's the governance problem here?",
+     "options": [
+      "It loads and saves a full record for every ID inside a loop",
+      "forEach isn't allowed in SuiteScript",
+      "setValue costs 50 units",
+      "Nothing; this is optimal"
+     ],
+     "answer": 0,
+     "explain": "30 units per order on transactions. submitFields cuts it to 10; Map/Reduce removes the ceiling.",
+     "code": "ids.forEach((id) => {\n  const so = record.load({ type: 'salesorder', id });\n  so.setValue({ fieldId: 'memo', value: 'Reviewed' });\n  so.save();\n});"
+    },
+    {
+     "q": "In a Map/Reduce map stage, what type is `context.value`?",
+     "options": [
+      "A string (often JSON you need to parse)",
+      "A loaded record object",
+      "A search.Result object",
+      "An array"
+     ],
+     "answer": 0,
+     "explain": "Always JSON.parse it when getInputData returned objects or search results."
+    },
+    {
+     "q": "In reduce, what is `context.values`?",
+     "options": [
+      "An array of strings written by map for that key",
+      "A single string",
+      "A search result set",
+      "The summary object"
+     ],
+     "answer": 0,
+     "explain": "reduce runs once per key with every value grouped together."
+    },
+    {
+     "q": "Where do you find errors thrown inside map invocations?",
+     "options": [
+      "summary.mapSummary.errors in summarize",
+      "The browser console",
+      "getInputData's return value",
+      "They stop the whole script immediately"
+     ],
+     "answer": 0,
+     "explain": "Each key fails independently; summarize reports them."
+    },
+    {
+     "q": "Which statement about Map/Reduce is true?",
+     "options": [
+      "It yields automatically and can run map/reduce invocations in parallel",
+      "It has a single 10,000 unit budget for the whole run",
+      "It must use both map and reduce",
+      "It only runs on demand, never on a schedule"
+     ],
+     "answer": 0,
+     "explain": "That's why it's the tool for volume."
+    },
+    {
+     "q": "Which can getInputData return?",
+     "options": [
+      "An array, an object, a search or a SuiteQL query",
+      "Only an array of internal IDs",
+      "Only a saved search ID",
+      "Only a file"
+     ],
+     "answer": 0,
+     "explain": "NetSuite iterates whatever you return and feeds it to map."
+    },
+    {
+     "q": "Does a Scheduled script yield automatically when units run low?",
+     "options": [
+      "No",
+      "Yes, always",
+      "Only on weekends",
+      "Only when deployed in Released status"
+     ],
+     "answer": 0,
+     "explain": "In 2.x, plan for it: reschedule with N/task or use Map/Reduce."
+    },
+    {
+     "q": "How many units does a Scheduled script get?",
+     "options": [
+      "10,000",
+      "1,000",
+      "5,000",
+      "100,000"
+     ],
+     "answer": 0,
+     "explain": "Enough for small batch jobs."
+    },
+    {
+     "q": "Which writes a key/value pair from map to reduce?",
+     "options": [
+      "context.write({ key, value })",
+      "return { key, value }",
+      "context.emit(key, value)",
+      "reduce.push(key, value)"
+     ],
+     "answer": 0,
+     "explain": "Values must be strings (objects are serialized)."
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Workflows, Suitelets & Integrations",
+   "subtitle": "UI tools and talking to other systems",
+   "week": "Weeks 6–7",
+   "sections": [
+    {
+     "title": "SuiteFlow workflows",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "SuiteFlow is a visual **state machine** attached to a record type, built under Customization → Workflow."
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Initiation**: event-based (on create, on view or update) or scheduled, plus conditions.",
+        "**States**: e.g. Pending Approval → Approved → Rejected.",
+        "**Actions** inside states: set field value, send email, add button, lock record, create record, show message, or run a Workflow Action script.",
+        "**Triggers** decide when actions run: Entry, Exit, Before Record Load, Before Record Submit, After Record Submit, Scheduled.",
+        "**Transitions** move between states, triggered by events, buttons or conditions."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "Use workflows for approvals and simple field logic that admins should be able to maintain. Use SuiteScript for heavy logic, loops over lines, external calls or anything performance-sensitive."
+      },
+      {
+       "t": "tip",
+       "text": "A Workflow Action script (entry point `onAction`) lets a workflow call code for the one step it can't do itself, and its return value can be stored in a workflow field."
+      }
+     ]
+    },
+    {
+     "title": "Suitelets",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A Suitelet answers HTTP requests at its own URL with `onRequest(context)`. Build pages with `N/ui/serverWidget` or write raw HTML."
+      },
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType Suitelet\n */\ndefine(['N/ui/serverWidget', 'N/record', 'N/redirect'], (ui, record, redirect) => {\n  const onRequest = (context) => {\n    if (context.request.method === 'GET') {\n      const form = ui.createForm({ title: 'New Task' });\n      form.addField({ id: 'custpage_title', type: ui.FieldType.TEXT, label: 'Title' })\n          .isMandatory = true;\n      form.addSubmitButton({ label: 'Create' });\n      context.response.writePage(form);\n    } else {\n      const id = record.create({ type: record.Type.TASK })\n        .setValue({ fieldId: 'title', value: context.request.parameters.custpage_title })\n        .save();\n      redirect.toRecord({ type: record.Type.TASK, id });\n    }\n  };\n  return { onRequest };\n});"
+      },
+      {
+       "t": "p",
+       "text": "GET shows the form; POST handles the submit. Form field values arrive in `context.request.parameters`."
+      }
+     ]
+    },
+    {
+     "title": "Integration options",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Option",
+         "What it is",
+         "When to use"
+        ],
+        [
+         "SuiteTalk REST",
+         "Standard REST API for records plus a SuiteQL endpoint",
+         "Default for new CRUD integrations"
+        ],
+        [
+         "SuiteTalk SOAP",
+         "Older XML/WSDL API",
+         "Legacy integrations and connectors"
+        ],
+        [
+         "RESTlets",
+         "Your own SuiteScript endpoint",
+         "Custom logic, many operations in one call, custom payloads"
+        ],
+        [
+         "CSV Import",
+         "Import Assistant or N/task",
+         "Bulk data loads"
+        ],
+        [
+         "Outbound N/https",
+         "A script calls another system",
+         "Pushing data out of NetSuite"
+        ]
+       ]
+      }
+     ]
+    },
+    {
+     "title": "RESTlets",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType Restlet\n */\ndefine(['N/record', 'N/search'], (record, search) => {\n  const get = (params) => search.lookupFields({\n    type: 'customer', id: params.id, columns: ['companyname', 'email']\n  });\n\n  const post = (body) => {\n    const id = record.create({ type: 'customer' })\n      .setValue({ fieldId: 'companyname', value: body.name })\n      .setValue({ fieldId: 'subsidiary', value: body.subsidiary })\n      .save();\n    return { id };\n  };\n  return { get, post };\n});"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "`get` and `delete` receive URL parameters; `post` and `put` receive the request body.",
+        "With `Content-Type: application/json`, the body arrives already parsed and returned objects are serialized.",
+        "URL: `https://<account>.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1`.",
+        "RESTlets get 5,000 units per call."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "SuiteTalk REST",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "GET https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/record/v1/customer/123\n\nPOST https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/query/v1/suiteql\nPrefer: transient\n{ \"q\": \"SELECT id, companyname FROM customer WHERE isinactive = 'F'\" }"
+      },
+      {
+       "t": "p",
+       "text": "The record service supports GET, POST (create), PATCH (update), PUT (upsert by external ID) and DELETE. Sandbox account IDs use a hyphen in URLs, like `1234567-sb1`."
+      }
+     ]
+    },
+    {
+     "title": "Authentication",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "**Token-Based Authentication (TBA)**: OAuth 1.0a signed requests. An **Integration record** provides the consumer key/secret; an **access token** (tied to a user and role) provides the token ID/secret. Requests are signed with HMAC-SHA256.",
+        "**OAuth 2.0**: authorization code flow, or machine-to-machine client credentials using a certificate.",
+        "Plain username/password login for web services is no longer supported."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "Turn on the features under Setup → Company → Enable Features → SuiteCloud (REST Web Services, Token-Based Authentication, OAuth 2.0)."
+      },
+      {
+       "t": "warn",
+       "text": "The integration's role decides what it can do. Give it only the permissions it needs, and never use an Administrator token for an integration."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "SuiteFlow is a state machine: initiation, states, actions with triggers, transitions.",
+    "Workflows for approvals and simple logic; scripts for heavy or performance-sensitive logic.",
+    "Suitelets: onRequest; GET renders, POST processes; fields come from request.parameters.",
+    "RESTlets: get/delete take params, post/put take the body; 5,000 units.",
+    "SuiteTalk REST is the default for new integrations; SuiteQL has its own endpoint.",
+    "Authenticate with TBA (OAuth 1.0a) or OAuth 2.0, using a least-privilege role."
+   ],
+   "lab": {
+    "title": "Approval workflow plus an API",
+    "goal": "Build both halves of weeks 6 and 7.",
+    "steps": [
+     "Build a purchase order workflow: initiate on create when amount > 5,000; states Pending Approval, Approved, Rejected; Approve/Reject buttons for the supervisor; email on rejection.",
+     "Add a Workflow Action script that writes an audit note to a custom record when a PO is approved.",
+     "Build the Suitelet from this chapter that creates a Task and redirects to it.",
+     "Build the RESTlet from this chapter with get and post.",
+     "Create an Integration record and an access token for a limited role.",
+     "Call the RESTlet and a SuiteTalk REST record GET from Postman using OAuth 1.0 (HMAC-SHA256)."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "Common workflow triggers",
+     "back": "Entry, Exit, Before Record Load, Before Record Submit, After Record Submit, Scheduled."
+    },
+    {
+     "front": "Workflow vs. script",
+     "back": "Workflows for approvals and simple logic admins maintain; scripts for heavy logic, line loops, external calls."
+    },
+    {
+     "front": "Suitelet GET vs. POST",
+     "back": "GET usually renders the form; POST handles the submitted values."
+    },
+    {
+     "front": "RESTlet get/delete input",
+     "back": "URL parameters object."
+    },
+    {
+     "front": "RESTlet post/put input",
+     "back": "Request body (parsed if Content-Type is application/json)."
+    },
+    {
+     "front": "TBA",
+     "back": "Token-Based Authentication: OAuth 1.0a with consumer key/secret plus token ID/secret."
+    },
+    {
+     "front": "SuiteQL REST endpoint",
+     "back": "POST /services/rest/query/v1/suiteql with header Prefer: transient."
+    },
+    {
+     "front": "Integration record",
+     "back": "Provides the consumer key and secret for an external application."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What kind of tool is SuiteFlow?",
+     "options": [
+      "A visual state machine attached to a record type",
+      "A JavaScript debugger",
+      "A data import tool",
+      "A report writer"
+     ],
+     "answer": 0,
+     "explain": "Workflows move records through states with actions and transitions."
+    },
+    {
+     "q": "A finance team wants a PO approval process they can tweak themselves. Best tool?",
+     "options": [
+      "A SuiteFlow workflow",
+      "A Map/Reduce script",
+      "A RESTlet",
+      "A client script"
+     ],
+     "answer": 0,
+     "explain": "Approvals that admins maintain are SuiteFlow's sweet spot."
+    },
+    {
+     "q": "A workflow needs one step it can't do natively. What do you add?",
+     "options": [
+      "A Workflow Action script",
+      "A Portlet",
+      "A second workflow",
+      "A Mass Update script"
+     ],
+     "answer": 0,
+     "explain": "The workflow calls it via a custom action; onAction runs your code."
+    },
+    {
+     "q": "In a Suitelet, where do submitted form values arrive?",
+     "options": [
+      "context.request.parameters",
+      "context.newRecord",
+      "context.response.body",
+      "runtime.getCurrentUser()"
+     ],
+     "answer": 0,
+     "explain": "POST parameters are keyed by the custpage_ field IDs."
+    },
+    {
+     "q": "Which RESTlet entry points receive the request body?",
+     "options": [
+      "post and put",
+      "get and delete",
+      "get only",
+      "All four receive the body"
+     ],
+     "answer": 0,
+     "explain": "get and delete receive URL parameters instead."
+    },
+    {
+     "q": "What's the default choice for a new integration that creates and updates standard records?",
+     "options": [
+      "SuiteTalk REST Web Services",
+      "SuiteTalk SOAP",
+      "Screen scraping",
+      "Emailing CSV files"
+     ],
+     "answer": 0,
+     "explain": "Oracle is steering new work toward REST."
+    },
+    {
+     "q": "Token-Based Authentication is based on which standard?",
+     "options": [
+      "OAuth 1.0a",
+      "Basic auth",
+      "SAML",
+      "API keys in the URL"
+     ],
+     "answer": 0,
+     "explain": "TBA signs each request with consumer and token credentials."
+    },
+    {
+     "q": "Which two credential pairs does a TBA request use?",
+     "options": [
+      "Consumer key/secret and token ID/secret",
+      "Username/password and a PIN",
+      "Client ID and a session cookie",
+      "An API key and an account number"
+     ],
+     "answer": 0,
+     "explain": "The Integration record gives the consumer pair; the access token gives the token pair."
+    },
+    {
+     "q": "Which header makes SuiteQL REST calls work?",
+     "options": [
+      "Prefer: transient",
+      "Accept: suiteql",
+      "X-NetSuite-Query: true",
+      "Content-Type: text/sql"
+     ],
+     "answer": 0,
+     "explain": "The SuiteQL endpoint requires Prefer: transient."
+    },
+    {
+     "q": "What's the risk in using an Administrator's access token for an integration?",
+     "options": [
+      "The integration gets far more access than it needs",
+      "Admin tokens expire every hour",
+      "Admins can't create tokens",
+      "It disables governance"
+     ],
+     "answer": 0,
+     "explain": "Use a dedicated least-privilege role."
+    },
+    {
+     "q": "When should you choose a RESTlet over SuiteTalk REST?",
+     "options": [
+      "When you need custom logic or several operations in a single call",
+      "Whenever you need to read a customer",
+      "When you want no authentication",
+      "Only for SOAP clients"
+     ],
+     "answer": 0,
+     "explain": "RESTlets shine for custom payloads and business logic."
+    },
+    {
+     "q": "In this RESTlet call, what is `params.id`?",
+     "options": [
+      "The value of the id URL parameter",
+      "The request body",
+      "The script ID",
+      "The deployment ID"
+     ],
+     "answer": 0,
+     "explain": "get receives the URL query parameters as an object.",
+     "code": "// GET .../restlet.nl?script=123&deploy=1&id=42\nconst get = (params) => search.lookupFields({ type: 'customer', id: params.id, columns: ['email'] });"
+    },
+    {
+     "q": "Which workflow trigger runs actions just before the record is saved?",
+     "options": [
+      "Before Record Submit",
+      "Entry",
+      "After Record Submit",
+      "Before Record Load"
+     ],
+     "answer": 0,
+     "explain": "Like a User Event's beforeSubmit, but configured visually."
+    },
+    {
+     "q": "How do sandbox account IDs appear in SuiteTalk URLs?",
+     "options": [
+      "With a hyphen, e.g. 1234567-sb1",
+      "With an underscore, e.g. 1234567_SB1",
+      "Without the suffix",
+      "As a separate sandbox domain only"
+     ],
+     "answer": 0,
+     "explain": "The account ID 1234567_SB1 becomes 1234567-sb1 in the hostname."
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "SDF, Environments & Deployment",
+   "subtitle": "Working like a professional",
+   "week": "Week 8",
+   "sections": [
+    {
+     "title": "Customization as code",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "The **SuiteCloud Development Framework (SDF)** lets you keep scripts **and** configuration (custom fields, records, workflows, searches, deployments) in files, in Git, instead of clicking them into each account by hand."
+      },
+      {
+       "t": "code",
+       "text": "my-project/\n  src/\n    manifest.xml        # project type, dependencies\n    deploy.xml          # what to deploy\n    FileCabinet/\n      SuiteScripts/     # your .js files\n    Objects/            # XML: customscript_*, custbody_*, customrecord_*..."
+      }
+     ]
+    },
+    {
+     "title": "Project types",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "**Account Customization Project (ACP)**: for your own company's account. The usual choice.",
+        "**SuiteApp project**: a packaged app (with an ID like `com.mycompany.myapp`) distributed to other accounts, often through the SuiteApp Marketplace."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "The older way to move customizations between accounts is **Bundles** (SuiteBundler). You'll still see them in many companies."
+      }
+     ]
+    },
+    {
+     "title": "The SuiteCloud CLI",
+     "blocks": [
+      {
+       "t": "code",
+       "text": "npm i -g @oracle/suitecloud-cli\n\nsuitecloud project:create -i         # new project (interactive)\nsuitecloud account:setup             # authenticate to an account\nsuitecloud object:import             # pull existing objects as XML\nsuitecloud file:import               # pull File Cabinet files\nsuitecloud project:validate --server # check before deploying\nsuitecloud project:deploy            # push to the account"
+      },
+      {
+       "t": "p",
+       "text": "There are also SuiteCloud extensions for VS Code and WebStorm that wrap the same commands."
+      },
+      {
+       "t": "tip",
+       "text": "Run `project:validate --server` before every deploy. It catches missing dependencies and bad references against the real account."
+      }
+     ]
+    },
+    {
+     "title": "Unit testing",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "`@oracle/suitecloud-unit-testing` adds Jest with stubs for the N/ modules, so you can test script logic without an account."
+      },
+      {
+       "t": "code",
+       "text": "import record from 'N/record';\nimport Record from 'N/record/instance';\nimport script from 'src/FileCabinet/SuiteScripts/ue_default_memo';\n\njest.mock('N/record');\n\ntest('sets memo on create', () => {\n  const ctx = { type: 'create', UserEventType: { CREATE: 'create' }, newRecord: Record };\n  Record.getValue.mockReturnValue('');\n  script.beforeSubmit(ctx);\n  expect(Record.setValue).toHaveBeenCalledWith({ fieldId: 'memo', value: 'Created by script' });\n});"
+      }
+     ]
+    },
+    {
+     "title": "Environments",
+     "blocks": [
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Account",
+         "Purpose"
+        ],
+        [
+         "Production",
+         "The live business. Don't experiment here."
+        ],
+        [
+         "Sandbox",
+         "A copy of production (data + config) refreshed on request. Account ID has a suffix like 1234567_SB1. Email can be redirected."
+        ],
+        [
+         "Release Preview",
+         "Temporary account to test your customizations against the next release before it hits production."
+        ],
+        [
+         "Development account",
+         "A clean account without production data, for building SuiteApps or practicing."
+        ]
+       ]
+      },
+      {
+       "t": "p",
+       "text": "NetSuite ships **two major releases a year**. Use Release Preview to catch anything an upgrade breaks before your users do."
+      },
+      {
+       "t": "warn",
+       "text": "A sandbox refresh overwrites the sandbox with a fresh copy of production. Anything built only in the sandbox is lost, which is another reason to keep work in SDF and Git."
+      }
+     ]
+    },
+    {
+     "title": "A healthy release flow",
+     "blocks": [
+      {
+       "t": "steps",
+       "items": [
+        "Develop locally in an SDF project, committed to Git.",
+        "Deploy to a sandbox with `suitecloud project:deploy`.",
+        "Test with deployments in **Testing** status and real end-user roles.",
+        "Get sign-off, then deploy the same project to production.",
+        "Flip deployments to **Released** and watch the Execution Log."
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "Keep account-specific values (internal IDs, emails) in script parameters so the same code works in sandbox and production."
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "SDF keeps scripts and configuration objects in files you can version in Git.",
+    "ACP for your own account; SuiteApp projects for distributed apps; Bundles are the legacy route.",
+    "CLI: project:create, account:setup, object:import, project:validate --server, project:deploy.",
+    "Unit test with @oracle/suitecloud-unit-testing (Jest + N/ stubs).",
+    "Production, sandbox (_SB1), Release Preview and development accounts each have a job.",
+    "Flow: SDF + Git → sandbox → test in Testing status → production → Released."
+   ],
+   "lab": {
+    "title": "Put your account under version control",
+    "goal": "Set up the professional workflow.",
+    "steps": [
+     "Install Node.js and the SuiteCloud CLI.",
+     "Run `suitecloud project:create -i` and create an Account Customization Project.",
+     "Run `suitecloud account:setup` against your sandbox or dev account.",
+     "Import the scripts and custom objects you built in earlier chapters with object:import and file:import.",
+     "Commit everything to a Git repo.",
+     "Change a script, run `project:validate --server`, then `project:deploy`.",
+     "Add one Jest unit test with @oracle/suitecloud-unit-testing and run it."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "SDF",
+     "back": "SuiteCloud Development Framework: customizations as files you version and deploy."
+    },
+    {
+     "front": "ACP",
+     "back": "Account Customization Project: SDF project for your own company's account."
+    },
+    {
+     "front": "SuiteApp project",
+     "back": "SDF project for a packaged app distributed to other accounts."
+    },
+    {
+     "front": "Objects/ folder",
+     "back": "XML definitions of custom objects: scripts, deployments, fields, records, workflows, searches."
+    },
+    {
+     "front": "project:validate --server",
+     "back": "Validates the project against the real account before deploying."
+    },
+    {
+     "front": "Sandbox account ID",
+     "back": "Production ID plus a suffix like _SB1."
+    },
+    {
+     "front": "Release Preview",
+     "back": "Temporary account for testing against the next NetSuite release."
+    },
+    {
+     "front": "Releases per year",
+     "back": "Two major releases."
+    },
+    {
+     "front": "Bundles",
+     "back": "Legacy way (SuiteBundler) to move customizations between accounts."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What does SDF let you do?",
+     "options": [
+      "Manage scripts and configuration objects as files in version control",
+      "Run SQL updates against NetSuite",
+      "Raise governance limits",
+      "Skip the need for sandboxes"
+     ],
+     "answer": 0,
+     "explain": "Customizations become XML and JS files you can review, diff and deploy."
+    },
+    {
+     "q": "Which project type do you use for your own company's account?",
+     "options": [
+      "Account Customization Project (ACP)",
+      "SuiteApp project",
+      "Bundle project",
+      "Release Preview project"
+     ],
+     "answer": 0,
+     "explain": "SuiteApp projects are for packaged apps distributed to other accounts."
+    },
+    {
+     "q": "Where do custom field and script deployment definitions live in an SDF project?",
+     "options": [
+      "In the Objects folder as XML",
+      "In manifest.xml",
+      "In FileCabinet/SuiteScripts",
+      "In package.json"
+     ],
+     "answer": 0,
+     "explain": "Objects/ holds XML for custom objects; FileCabinet/ holds files."
+    },
+    {
+     "q": "Which command checks your project against the real account before deploying?",
+     "options": [
+      "suitecloud project:validate --server",
+      "suitecloud project:create",
+      "suitecloud account:setup",
+      "npm test"
+     ],
+     "answer": 0,
+     "explain": "Server validation catches missing dependencies and bad references."
+    },
+    {
+     "q": "Which command pulls existing custom objects from an account into your project?",
+     "options": [
+      "suitecloud object:import",
+      "suitecloud project:deploy",
+      "suitecloud file:upload",
+      "suitecloud account:pull"
+     ],
+     "answer": 0,
+     "explain": "file:import does the same for File Cabinet files."
+    },
+    {
+     "q": "What is a sandbox account?",
+     "options": [
+      "A copy of production that you can refresh on request",
+      "A blank account with no data",
+      "Production with scripts disabled",
+      "A local emulator"
+     ],
+     "answer": 0,
+     "explain": "Sandboxes carry production data and configuration, with a suffix like _SB1."
+    },
+    {
+     "q": "What happens to work built only in a sandbox when it's refreshed?",
+     "options": [
+      "It's overwritten by the fresh copy of production",
+      "It's merged into production",
+      "It's archived automatically",
+      "Nothing; refreshes only add data"
+     ],
+     "answer": 0,
+     "explain": "Keep work in SDF and Git so a refresh doesn't erase it."
+    },
+    {
+     "q": "What is a Release Preview account for?",
+     "options": [
+      "Testing your customizations against the next NetSuite release",
+      "Previewing a script before saving it",
+      "Showing customers new features",
+      "Permanent extra sandbox storage"
+     ],
+     "answer": 0,
+     "explain": "NetSuite ships two major releases a year; Release Preview lets you test early."
+    },
+    {
+     "q": "Which package adds Jest with N/ module stubs?",
+     "options": [
+      "@oracle/suitecloud-unit-testing",
+      "@oracle/suitecloud-cli",
+      "netsuite-jest",
+      "@netsuite/mocks"
+     ],
+     "answer": 0,
+     "explain": "It lets you unit test script logic without an account."
+    },
+    {
+     "q": "What's the healthiest order of steps?",
+     "options": [
+      "SDF + Git → sandbox → test in Testing status → production → Released",
+      "Production → sandbox → Git",
+      "Edit in production, then copy to sandbox",
+      "Deploy to production in Released status, then test"
+     ],
+     "answer": 0,
+     "explain": "Test in a safe environment first, with real roles, then release."
+    },
+    {
+     "q": "How do you keep the same code working in sandbox and production when internal IDs differ?",
+     "options": [
+      "Put account-specific values in script parameters",
+      "Hard-code both and check the URL",
+      "Use only custom records",
+      "Re-write the script per account"
+     ],
+     "answer": 0,
+     "explain": "Parameters are set per deployment, so each account gets its own values."
+    },
+    {
+     "q": "What is the legacy way to move customizations between accounts?",
+     "options": [
+      "Bundles (SuiteBundler)",
+      "CSV import",
+      "SuiteQL",
+      "Saved search export"
+     ],
+     "answer": 0,
+     "explain": "Bundles are still common, but SDF is the modern approach."
+    },
+    {
+     "q": "How many major NetSuite releases ship per year?",
+     "options": [
+      "Two",
+      "One",
+      "Four",
+      "Twelve"
+     ],
+     "answer": 0,
+     "explain": "Use Release Preview each time to catch regressions."
+    }
+   ]
+  }
+ ],
+ "glossary": [
+  {
+   "term": "ACP",
+   "def": "Account Customization Project, an SDF project for your own account."
+  },
+  {
+   "term": "Body field",
+   "def": "A field on the record header, one value per record."
+  },
+  {
+   "term": "Classification",
+   "def": "Subsidiary, department, class or location on a transaction."
+  },
+  {
+   "term": "Client script",
+   "def": "Script type that runs in the browser on a form."
+  },
+  {
+   "term": "Custom list",
+   "def": "A simple set of dropdown values (customlist_)."
+  },
+  {
+   "term": "Custom record type",
+   "def": "A table you define, with its own fields, forms and permissions (customrecord_)."
+  },
+  {
+   "term": "custpage_",
+   "def": "Prefix for fields added on the fly in Suitelets or beforeLoad; not stored."
+  },
+  {
+   "term": "Dynamic mode",
+   "def": "Record mode that sources fields as you set them, like the UI."
+  },
+  {
+   "term": "Entry point",
+   "def": "A function NetSuite calls for a script type, like beforeSubmit or execute."
+  },
+  {
+   "term": "Execution context",
+   "def": "What triggered a script: UI, CSV import, web services, scheduled, and so on."
+  },
+  {
+   "term": "Execution Log",
+   "def": "Where log.debug/audit/error entries appear, on the script deployment."
+  },
+  {
+   "term": "File Cabinet",
+   "def": "NetSuite's file system, where script files live (usually under SuiteScripts/)."
+  },
+  {
+   "term": "Governance",
+   "def": "Usage-unit budgets that limit what one script execution can do."
+  },
+  {
+   "term": "Integration record",
+   "def": "Defines an external application and provides its consumer key and secret."
+  },
+  {
+   "term": "Internal ID",
+   "def": "Numeric primary key of a record or list value, unique per record type."
+  },
+  {
+   "term": "Main Line",
+   "def": "The header row of a transaction in searches. Set Main Line = true for one row per transaction."
+  },
+  {
+   "term": "Map/Reduce",
+   "def": "Script type that processes large data sets in parallel stages and yields automatically."
+  },
+  {
+   "term": "OneWorld",
+   "def": "Multi-subsidiary edition of NetSuite."
+  },
+  {
+   "term": "Release Preview",
+   "def": "Temporary account for testing against the next NetSuite release."
+  },
+  {
+   "term": "Released status",
+   "def": "Deployment status that runs the script for its audience."
+  },
+  {
+   "term": "RESTlet",
+   "def": "Script type that exposes your own HTTP endpoint."
+  },
+  {
+   "term": "Sandbox",
+   "def": "A refreshable copy of production for development and testing."
+  },
+  {
+   "term": "Saved search",
+   "def": "NetSuite's reusable query builder (script IDs start with customsearch)."
+  },
+  {
+   "term": "Script deployment",
+   "def": "Where, when and for whom a script runs, with its status and log level."
+  },
+  {
+   "term": "Script ID",
+   "def": "Text ID of a custom object, e.g. custbody_rush_order."
+  },
+  {
+   "term": "Script parameter",
+   "def": "A per-deployment setting on a script record (IDs start with custscript_)."
+  },
+  {
+   "term": "Script record",
+   "def": "The record that registers a script file with NetSuite."
+  },
+  {
+   "term": "SDF",
+   "def": "SuiteCloud Development Framework: customizations as files you version and deploy."
+  },
+  {
+   "term": "Sourcing",
+   "def": "Auto-filling fields from related records, like terms and address from the customer."
+  },
+  {
+   "term": "Standard mode",
+   "def": "Default record mode; values can be set in any order and source on save."
+  },
+  {
+   "term": "Sublist",
+   "def": "A table of lines on a record, like the item lines on a sales order."
+  },
+  {
+   "term": "Subrecord",
+   "def": "A record nested inside another record, like an address or inventory detail."
+  },
+  {
+   "term": "SuiteAnswers",
+   "def": "NetSuite's support knowledge base."
+  },
+  {
+   "term": "SuiteApp",
+   "def": "A packaged customization installable in other accounts."
+  },
+  {
+   "term": "SuiteFlow",
+   "def": "NetSuite's visual workflow builder (a state machine on a record type)."
+  },
+  {
+   "term": "Suitelet",
+   "def": "Script type that serves a custom page at its own URL."
+  },
+  {
+   "term": "SuiteQL",
+   "def": "Read-only SQL dialect over NetSuite's analytics data source."
+  },
+  {
+   "term": "SuiteScript",
+   "def": "NetSuite's JavaScript API. Write version 2.1."
+  },
+  {
+   "term": "SuiteTalk",
+   "def": "NetSuite's web services: REST and the older SOAP API."
+  },
+  {
+   "term": "TBA",
+   "def": "Token-Based Authentication: OAuth 1.0a signed requests with consumer and token credentials."
+  },
+  {
+   "term": "Testing status",
+   "def": "Deployment status that runs the script only for its owner."
+  },
+  {
+   "term": "Transform",
+   "def": "Creating a record from another, e.g. Sales Order to Invoice (record.transform)."
+  },
+  {
+   "term": "Usage unit",
+   "def": "The cost of an API call. Running out throws SSS_USAGE_LIMIT_EXCEEDED."
+  },
+  {
+   "term": "User Event",
+   "def": "Script type that runs on the server when records are loaded or saved."
+  },
+  {
+   "term": "XEDIT",
+   "def": "User Event type for inline edits and submitFields."
+  }
+ ]
+}
