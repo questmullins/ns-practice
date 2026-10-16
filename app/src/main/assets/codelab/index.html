@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NS Code Lab</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="bar">
+  <button id="pickBtn" class="pick" aria-label="Choose a challenge">
+    <span id="pickLabel">Choose a challenge</span>
+    <span class="caret">▾</span>
+  </button>
+  <button id="studyBtn" class="ghost" title="Open the study app">Study ↗</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button data-tab="task" class="tab active">Task</button>
+  <button data-tab="code" class="tab">Code</button>
+  <button data-tab="results" class="tab">Results <span id="resultDot" class="dot"></span></button>
+  <button data-tab="data" class="tab">Sample data</button>
+</nav>
+
+<main id="panes">
+  <section id="pane-task" class="pane active">
+    <div id="taskBody"></div>
+  </section>
+
+  <section id="pane-code" class="pane">
+    <div class="editor-wrap">
+      <pre id="gutter" aria-hidden="true">1</pre>
+      <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off"></textarea>
+    </div>
+    <div class="keys" id="keys"></div>
+    <div class="code-actions">
+      <button id="resetBtn" class="ghost">Reset</button>
+      <button id="runBtn" class="primary">▶ Run</button>
+    </div>
+  </section>
+
+  <section id="pane-results" class="pane">
+    <div id="resultsBody"><p class="muted">Run your code to see results here.</p></div>
+  </section>
+
+  <section id="pane-data" class="pane">
+    <p class="muted">This is the pretend NetSuite account your code runs against. It resets every time you press Run, so experiment freely.</p>
+    <div id="dataBody"></div>
+  </section>
+</main>
+
+<div id="picker" class="sheet hidden" role="dialog" aria-label="Challenges">
+  <div class="sheet-head">
+    <strong>Challenges</strong>
+    <button id="closePicker" class="ghost">Close</button>
+  </div>
+  <div id="pickerList"></div>
+</div>
+
+<script src="runtime.js"></script>
+<script src="challenges.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

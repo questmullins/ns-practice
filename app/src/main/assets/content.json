@@ -2,6 +2,414 @@
  "version": 1,
  "chapters": [
   {
+   "id": 0,
+   "title": "JavaScript from Zero",
+   "subtitle": "The coding basics SuiteScript is built on",
+   "week": "Start here",
+   "sections": [
+    {
+     "title": "What code is, and which language",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A **program** is a list of instructions a computer follows exactly, top to bottom. You write them in a **programming language**, a strict, tiny vocabulary the computer understands."
+      },
+      {
+       "t": "p",
+       "text": "NetSuite's scripting language, **SuiteScript**, is **JavaScript** with NetSuite's own add-ons. It is **not Java**. The names are similar for marketing reasons from the 1990s, but they are different languages."
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "",
+         "JavaScript",
+         "Java"
+        ],
+        [
+         "Used by NetSuite?",
+         "Yes, SuiteScript is JavaScript",
+         "No"
+        ],
+        [
+         "Variables",
+         "`let total = 5;`",
+         "`int total = 5;`"
+        ],
+        [
+         "Runs",
+         "In browsers and on servers (NetSuite, Node.js)",
+         "Android apps, enterprise back ends"
+        ],
+        [
+         "Practice it",
+         "Code Lab, freeCodeCamp, any browser",
+         "Not needed for NetSuite"
+        ]
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "When a job post says SuiteScript, it means JavaScript. Every hour you spend on JavaScript counts."
+      }
+     ]
+    },
+    {
+     "title": "Values and variables",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A **value** is a piece of data. The basic kinds (called **types**):"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Number**: `42`, `12.5`, `-3`.",
+        "**String**: text in quotes, `'Acme Corp'` or `\"Acme Corp\"`.",
+        "**Boolean**: `true` or `false`. NetSuite checkboxes are booleans.",
+        "**null** and **undefined**: \"no value\". You'll see both."
+       ]
+      },
+      {
+       "t": "p",
+       "text": "A **variable** is a named box for a value. Use `const` when the box never gets a new value, and `let` when it will. (Old code uses `var`; avoid it.)"
+      },
+      {
+       "t": "code",
+       "text": "const customer = 'Acme Corp';\nlet openOrders = 2;\nopenOrders = openOrders + 1;   // now 3\nconst message = `${customer} has ${openOrders} open orders`;"
+      },
+      {
+       "t": "p",
+       "text": "That last line is a **template literal**: backticks with `${...}` placeholders. It's the easiest way to build text from values."
+      },
+      {
+       "t": "p",
+       "text": "`//` starts a **comment**: a note for humans that the computer ignores."
+      }
+     ]
+    },
+    {
+     "title": "Comparing and deciding",
+     "blocks": [
+      {
+       "t": "bullets",
+       "items": [
+        "`=` **assigns** a value. `===` **compares** two values. Mixing them up is the most common beginner bug.",
+        "`!==` means \"not equal\". `>`, `<`, `>=`, `<=` compare numbers.",
+        "`&&` means AND, `||` means OR, `!` means NOT."
+       ]
+      },
+      {
+       "t": "code",
+       "text": "if (total > 10000 && !poNumber) {\n  // runs only when both are true\n} else {\n  // runs otherwise\n}"
+      },
+      {
+       "t": "p",
+       "text": "**Truthy and falsy**: in an `if`, the values `false`, `0`, `''` (empty string), `null` and `undefined` count as false. Everything else counts as true. So `if (!memo)` means \"if the memo is empty\"."
+      }
+     ]
+    },
+    {
+     "title": "Arrays and loops",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "An **array** is an ordered list: `const totals = [185, 195, 1055];`. Positions (called **indexes**) start at **0**, so `totals[0]` is 185. `totals.length` is 3."
+      },
+      {
+       "t": "code",
+       "text": "for (let i = 0; i < totals.length; i++) {\n  log.debug('Total ' + i, totals[i]);\n}\n\nfor (const t of totals) { /* t is each value */ }\n\ntotals.push(300);                          // add to the end\nconst big = totals.filter((t) => t > 250); // [1055, 300]\nconst sum = totals.reduce((a, t) => a + t, 0);"
+      },
+      {
+       "t": "p",
+       "text": "A **loop** repeats code. The classic `for` loop reads: start `i` at 0; keep going while `i` is less than the length; add 1 each time (`i++`)."
+      },
+      {
+       "t": "warn",
+       "text": "NetSuite sublist lines also start at 0. Old SuiteScript 1.0 started at 1, which is why you'll see off-by-one bugs in older code."
+      }
+     ]
+    },
+    {
+     "title": "Objects",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "An **object** groups named values (called **properties**) in curly braces. Read one with a dot."
+      },
+      {
+       "t": "code",
+       "text": "const line = { item: 'WIDGET-S', quantity: 40, rate: 12 };\nline.quantity;          // 40\nline.amount = line.quantity * line.rate;  // add a property\n\nconst order = {\n  tranid: 'SO1003',\n  customer: { id: 102, name: 'Globex Inc' },  // objects can nest\n  lines: [line],\n};\norder.customer.name;    // 'Globex Inc'"
+      },
+      {
+       "t": "p",
+       "text": "Almost every SuiteScript call takes an object of options, like `record.load({ type: 'salesorder', id: 1003 })`. That's why you'll type `({ ... })` constantly."
+      }
+     ]
+    },
+    {
+     "title": "Functions",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "A **function** is a named, reusable block of code. It takes inputs (**parameters**) and can give back an output with `return`."
+      },
+      {
+       "t": "code",
+       "text": "function lineAmount(line) {\n  return line.quantity * line.rate;\n}\n\n// The same thing as an arrow function, the style SuiteScript 2.1 code uses:\nconst lineAmount2 = (line) => line.quantity * line.rate;\n\nlineAmount({ quantity: 2, rate: 30 });   // 60"
+      },
+      {
+       "t": "p",
+       "text": "A **callback** is a function you hand to another function so it can call it later. NetSuite does this constantly: `results.each((r) => { ...; return true; })` calls your arrow function once per search result."
+      },
+      {
+       "t": "tip",
+       "text": "If you see `=>`, you're looking at a function."
+      }
+     ]
+    },
+    {
+     "title": "JSON and errors",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "**JSON** (JavaScript Object Notation) is text shaped like an object. Systems send JSON to each other over the internet, and NetSuite stores and returns it constantly."
+      },
+      {
+       "t": "code",
+       "text": "const text = '{\"id\": 2003, \"open\": true}';\nconst obj = JSON.parse(text);        // text -> object\nconst back = JSON.stringify(obj);    // object -> text"
+      },
+      {
+       "t": "p",
+       "text": "When something goes wrong, JavaScript **throws an error** and stops. `try/catch` lets you catch it and decide what to do. You can also `throw` your own errors to stop bad data."
+      },
+      {
+       "t": "code",
+       "text": "try {\n  const data = JSON.parse(badText);\n} catch (e) {\n  log.error('Could not read data', e.message);\n}"
+      }
+     ]
+    },
+    {
+     "title": "How a SuiteScript file is laid out",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "Every SuiteScript file follows the same shape. You'll meet it properly in Chapter 5, but here's the map:"
+      },
+      {
+       "t": "code",
+       "text": "/**\n * @NApiVersion 2.1\n * @NScriptType UserEventScript\n */\ndefine(['N/record', 'N/log'], (record, log) => {\n  const beforeSubmit = (context) => {\n    // your code\n  };\n  return { beforeSubmit };\n});"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "The `/** ... */` comment holds **tags** that tell NetSuite the version and the script type.",
+        "`define([...], callback)` loads NetSuite **modules** (toolkits like `N/record` for records) and passes them to your function.",
+        "Your function returns an object of **entry points**: functions NetSuite calls at the right moment."
+       ]
+      }
+     ]
+    }
+   ],
+   "takeaways": [
+    "SuiteScript is JavaScript, not Java.",
+    "const for values that don't change, let for ones that do; `${}` in backticks builds text.",
+    "= assigns, === compares. '', 0, null, undefined and false are falsy.",
+    "Arrays and sublists start at index 0.",
+    "Objects hold named properties; SuiteScript calls take an options object: ({ ... }).",
+    "Functions take parameters and return values; => marks an arrow function; callbacks are functions passed in.",
+    "JSON.parse turns text into objects; try/catch handles errors."
+   ],
+   "lab": {
+    "title": "Keep practicing JavaScript",
+    "goal": "Build fluency beyond Code Lab.",
+    "steps": [
+     "Finish the four Chapter 0 challenges in Code Lab first.",
+     "freeCodeCamp's JavaScript Algorithms and Data Structures course (free) drills the same basics.",
+     "Practice array methods (map, filter, reduce) until you can write them without looking.",
+     "Read other people's SuiteScript samples in the NetSuite Help Center and explain each line out loud."
+    ]
+   },
+   "flashcards": [
+    {
+     "front": "Is SuiteScript Java?",
+     "back": "No. SuiteScript is JavaScript with NetSuite's modules."
+    },
+    {
+     "front": "const vs. let",
+     "back": "const can't be reassigned; let can."
+    },
+    {
+     "front": "= vs. ===",
+     "back": "= assigns a value; === compares two values."
+    },
+    {
+     "front": "Falsy values",
+     "back": "false, 0, '' (empty string), null, undefined (and NaN)."
+    },
+    {
+     "front": "First index of an array",
+     "back": "0"
+    },
+    {
+     "front": "Template literal",
+     "back": "Backtick string with ${} placeholders: `Hi ${name}`."
+    },
+    {
+     "front": "Arrow function",
+     "back": "Short function syntax: (x) => x * 2"
+    },
+    {
+     "front": "Callback",
+     "back": "A function passed to another function to be called later."
+    },
+    {
+     "front": "JSON.parse / JSON.stringify",
+     "back": "Text → object / object → text."
+    },
+    {
+     "front": "try/catch",
+     "back": "Runs code and catches errors so you can handle them."
+    }
+   ],
+   "questions": [
+    {
+     "q": "What language is SuiteScript?",
+     "options": [
+      "JavaScript",
+      "Java",
+      "Python",
+      "SQL"
+     ],
+     "answer": 0,
+     "explain": "SuiteScript is JavaScript plus NetSuite's N/ modules. Java is a different language."
+    },
+    {
+     "q": "Which line creates a variable you plan to change later?",
+     "options": [
+      "let count = 0;",
+      "const count = 0;",
+      "count == 0;",
+      "var: count = 0"
+     ],
+     "answer": 0,
+     "explain": "let allows reassignment. const doesn't."
+    },
+    {
+     "q": "What does this log?",
+     "options": [
+      "Acme has 3 orders",
+      "${name} has ${n} orders",
+      "name has n orders",
+      "An error"
+     ],
+     "answer": 0,
+     "explain": "Backtick strings replace ${...} with the values.",
+     "code": "const name = 'Acme';\nconst n = 3;\nlog.debug('x', `${name} has ${n} orders`);"
+    },
+    {
+     "q": "Which operator checks whether two values are equal?",
+     "options": [
+      "===",
+      "=",
+      "=>",
+      "!="
+     ],
+     "answer": 0,
+     "explain": "= assigns, => starts an arrow function, === compares."
+    },
+    {
+     "q": "What is `totals[0]` when `const totals = [185, 195, 1055];`?",
+     "options": [
+      "185",
+      "195",
+      "undefined",
+      "1055"
+     ],
+     "answer": 0,
+     "explain": "Arrays start at index 0."
+    },
+    {
+     "q": "Which of these is falsy?",
+     "options": [
+      "'' (an empty string)",
+      "'0'",
+      "[]",
+      "'false'"
+     ],
+     "answer": 0,
+     "explain": "Empty strings are falsy. Non-empty strings, even '0' and 'false', are truthy, and so are arrays."
+    },
+    {
+     "q": "What does this return?",
+     "options": [
+      "60",
+      "'2 * 30'",
+      "undefined",
+      "32"
+     ],
+     "answer": 0,
+     "explain": "The arrow function multiplies quantity by rate.",
+     "code": "const lineAmount = (line) => line.quantity * line.rate;\nlineAmount({ quantity: 2, rate: 30 });"
+    },
+    {
+     "q": "How do you read the name in `const c = { id: 7, name: 'Quest' };`?",
+     "options": [
+      "c.name",
+      "c[name]",
+      "c->name",
+      "name(c)"
+     ],
+     "answer": 0,
+     "explain": "Dot notation reads a property. (c['name'] with quotes also works.)"
+    },
+    {
+     "q": "What does JSON.parse do?",
+     "options": [
+      "Turns JSON text into a JavaScript object",
+      "Turns an object into text",
+      "Checks a script for syntax errors",
+      "Sends data to an API"
+     ],
+     "answer": 0,
+     "explain": "JSON.stringify goes the other way."
+    },
+    {
+     "q": "What is a callback?",
+     "options": [
+      "A function you pass to another function to be called later",
+      "A phone number stored on a customer",
+      "An error handler only",
+      "A loop that runs backwards"
+     ],
+     "answer": 0,
+     "explain": "search results' each() takes a callback and calls it once per result."
+    },
+    {
+     "q": "What happens when code inside `try { }` throws an error?",
+     "options": [
+      "The catch block runs with the error",
+      "The script always stops",
+      "The error is ignored silently",
+      "The try block runs again"
+     ],
+     "answer": 0,
+     "explain": "catch (e) receives the error so you can log or handle it."
+    },
+    {
+     "q": "In a SuiteScript file, what does define() do?",
+     "options": [
+      "Loads NetSuite modules and passes them to your function",
+      "Declares a new custom field",
+      "Deploys the script",
+      "Defines a saved search"
+     ],
+     "answer": 0,
+     "explain": "define(['N/record'], (record) => { ... }) gives your code the record module."
+    }
+   ]
+  },
+  {
    "id": 1,
    "title": "The NetSuite Mental Model",
    "subtitle": "How the platform fits together",
@@ -12,11 +420,15 @@
      "blocks": [
       {
        "t": "p",
-       "text": "NetSuite is a cloud **ERP**: a single database that holds accounting, inventory, orders, customers, vendors, employees and more. Every business object (a customer, a sales order, an item) is a **record**."
+       "text": "NetSuite is a cloud **ERP**. ERP stands for Enterprise Resource Planning: the one system a company runs its business on, covering accounting, inventory, orders, customers, vendors and employees. **Cloud** means it runs on Oracle's servers and people use it in a web browser."
       },
       {
        "t": "p",
-       "text": "You never touch that database directly. There is no SQL `UPDATE` and no direct table access. Every change goes through NetSuite's own APIs so that its business rules, permissions, sourcing and GL posting always run."
+       "text": "Under the hood it is a single **database** (an organized store of data). Every business object, whether a customer, a sales order or an item, is a **record**."
+      },
+      {
+       "t": "p",
+       "text": "You never touch that database directly. Every change goes through NetSuite's own **APIs** (Application Programming Interfaces: the official doors programs use to talk to a system), so its business rules, permissions and accounting entries always run."
       },
       {
        "t": "tip",
@@ -63,7 +475,7 @@
      "blocks": [
       {
        "t": "p",
-       "text": "External systems never connect to the database. They use **SuiteTalk** web services (REST or the older SOAP API) or a **RESTlet**, which is an HTTP endpoint you write yourself in SuiteScript."
+       "text": "External systems (a website, a shipping app, a warehouse scanner) never connect to the database. They send requests over the internet to **SuiteTalk** web services (REST or the older SOAP API), or to a **RESTlet**: a web address, called an **endpoint**, backed by SuiteScript you write yourself."
       },
       {
        "t": "p",
@@ -116,15 +528,98 @@
      ]
     },
     {
-     "title": "Accounts you'll work in",
+     "title": "Accounting words you'll hear",
      "blocks": [
       {
        "t": "p",
-       "text": "Never experiment in **production**. Practice in a **sandbox** (a copy of production) or a **development account** (clean, no live data). Chapter 10 covers environments in depth."
+       "text": "NetSuite developers work next to accountants. You don't need to be one, but you need the vocabulary:"
+      },
+      {
+       "t": "table",
+       "rows": [
+        [
+         "Term",
+         "Plain meaning"
+        ],
+        [
+         "General ledger (GL)",
+         "The master record of every money movement, organized into accounts like Cash, Revenue and Inventory."
+        ],
+        [
+         "Posting",
+         "When a transaction writes its amounts to the GL. Sales orders don't post; invoices do."
+        ],
+        [
+         "Accounts receivable (A/R)",
+         "Money customers owe you. Invoices raise it; payments lower it."
+        ],
+        [
+         "Accounts payable (A/P)",
+         "Money you owe vendors. Vendor bills raise it; bill payments lower it."
+        ],
+        [
+         "Revenue",
+         "Income from selling. Recorded when you invoice."
+        ],
+        [
+         "COGS",
+         "Cost of goods sold: what the items you shipped cost you. Recorded when you fulfill."
+        ],
+        [
+         "Subsidiary",
+         "A legal company inside the business. Big companies have several."
+        ]
+       ]
+      },
+      {
+       "t": "tip",
+       "text": "When an accountant says a script \"broke the GL\", they mean it created or changed transactions that posted wrong amounts."
+      }
+     ]
+    },
+    {
+     "title": "SuiteScript is JavaScript, not Java",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "NetSuite's code is **SuiteScript**, which is **JavaScript** plus NetSuite's own toolkits (the N/ modules). Java is an unrelated language. If you're new to code, start with Chapter 0, JavaScript from Zero."
+      },
+      {
+       "t": "p",
+       "text": "JavaScript is about 40% of the job. The other 60% is NetSuite-specific knowledge, and that's what interviews test:"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**The data model**: which records exist, how they link (sales order → fulfillment → invoice), and their field IDs.",
+        "**Script types and when each runs**: a User Event's beforeSubmit runs before a save, afterSubmit after.",
+        "**The N/ modules**: `N/record`, `N/search` and the rest, NetSuite's own APIs.",
+        "**Governance**: usage limits per script, which shape every design.",
+        "**Business process**: why orders, invoices and payments flow the way they do."
+       ]
+      }
+     ]
+    },
+    {
+     "title": "Practicing without an account",
+     "blocks": [
+      {
+       "t": "p",
+       "text": "NetSuite doesn't offer free personal accounts or trials. Until you have an employer's **sandbox** (a safe copy of a real account), practice like this:"
+      },
+      {
+       "t": "bullets",
+       "items": [
+        "**Code Lab** (the second app icon): write real SuiteScript against a pretend account with customers, orders and invoices. Every chapter has graded challenges that report back here.",
+        "**The NetSuite Help Center and SuiteScript API reference** are public. Look up every module and record you meet.",
+        "**SuiteCloud CLI and Jest** run on any computer, so you can build real SDF projects and unit-test scripts without an account (Chapter 10).",
+        "**Plain JavaScript and SQL practice** on free sites like freeCodeCamp and SQLBolt builds the core skills.",
+        "**Oracle's Academic Program** gives some college students a real account, and Oracle's paid SuiteFoundation courses include a training account."
+       ]
       },
       {
        "t": "warn",
-       "text": "Scripts and workflows in production can email customers, post to the general ledger and change inventory. Treat production like a live wire."
+       "text": "Once you do get access, never experiment in production. Scripts there can email customers, post to the general ledger and change inventory."
       }
      ]
     }
@@ -138,7 +633,7 @@
    ],
    "lab": {
     "title": "Walk the order-to-cash chain",
-    "goal": "See how transactions link and learn your first field IDs.",
+    "goal": "Do this once you have a sandbox or training account.",
     "steps": [
      "In a sandbox or dev account, turn on Show Internal IDs.",
      "Create a customer. Note its internal ID from the URL.",
@@ -315,6 +810,50 @@
      ],
      "answer": 0,
      "explain": "Global search accepts record-type prefixes like `cus:`, `so:` and `inv:` to narrow results."
+    },
+    {
+     "q": "What language do you write SuiteScript in?",
+     "options": [
+      "JavaScript",
+      "Java",
+      "C#",
+      "PL/SQL"
+     ],
+     "answer": 0,
+     "explain": "SuiteScript is JavaScript with NetSuite's N/ modules."
+    },
+    {
+     "q": "What does ERP stand for?",
+     "options": [
+      "Enterprise Resource Planning",
+      "Electronic Records Processing",
+      "Enterprise Reporting Portal",
+      "External Resource Protocol"
+     ],
+     "answer": 0,
+     "explain": "An ERP is the single system a company runs its finances and operations on."
+    },
+    {
+     "q": "Which transaction raises accounts receivable (money customers owe)?",
+     "options": [
+      "Invoice",
+      "Sales Order",
+      "Purchase Order",
+      "Item Receipt"
+     ],
+     "answer": 0,
+     "explain": "Invoicing posts revenue and A/R. The customer payment then lowers A/R."
+    },
+    {
+     "q": "What does COGS mean?",
+     "options": [
+      "Cost of goods sold: what the shipped items cost you",
+      "Customer order goods summary",
+      "The price the customer pays",
+      "A type of saved search"
+     ],
+     "answer": 0,
+     "explain": "COGS posts when items are fulfilled (shipped)."
     }
    ]
   },
@@ -1095,7 +1634,11 @@
      "blocks": [
       {
        "t": "p",
-       "text": "**SuiteQL** is a SQL dialect (based on SQL-92 / Oracle syntax) over NetSuite's analytics data source. It is **read-only** and great for joins that searches make awkward. Run it with `N/query` or the REST SuiteQL endpoint."
+       "text": "**SQL** (Structured Query Language) is the standard language for asking a database questions. The core shape is `SELECT columns FROM table WHERE condition`, and a **join** combines rows from two tables that share a value."
+      },
+      {
+       "t": "p",
+       "text": "**SuiteQL** is NetSuite's version of SQL (close to Oracle's). It is **read-only**: it can look but never change. It's great for joins that searches make awkward. Run it with `N/query` or the REST SuiteQL endpoint."
       },
       {
        "t": "code",
@@ -1356,7 +1899,7 @@
      "blocks": [
       {
        "t": "p",
-       "text": "Every file uses AMD-style `define()` plus JSDoc tags that tell NetSuite what it is."
+       "text": "Every file starts with a comment holding **JSDoc tags** (lines like `@NScriptType`) that tell NetSuite what the file is. Then comes `define()`, a pattern called **AMD** (Asynchronous Module Definition): you list the NetSuite **modules** you need, and NetSuite passes them into your function."
       },
       {
        "t": "code",
@@ -2193,6 +2736,10 @@
      "title": "N/https: calling the outside world",
      "blocks": [
       {
+       "t": "p",
+       "text": "An **HTTP request** is how programs talk over the web: you send a **method** (GET to read, POST to create, PUT/PATCH to update, DELETE to remove) to a **URL**, and get back a **status code** (200 means OK, 404 not found, 401 not allowed) and a **body**, usually JSON."
+      },
+      {
        "t": "code",
        "text": "const res = https.post({\n  url: 'https://api.example.com/orders',\n  headers: { 'Content-Type': 'application/json' },\n  body: JSON.stringify({ id: so.id, total: so.getValue('total') })\n});\nif (res.code !== 200) throw error.create({ name: 'SYNC_FAILED', message: res.body });\nconst data = JSON.parse(res.body);"
       },
@@ -2966,6 +3513,10 @@
      "title": "SuiteTalk REST",
      "blocks": [
       {
+       "t": "p",
+       "text": "**REST** is a common style of web API: each kind of thing has a URL, and the HTTP method says what to do with it. GET a customer's URL to read it, PATCH it to update it."
+      },
+      {
        "t": "code",
        "text": "GET https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/record/v1/customer/123\n\nPOST https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/query/v1/suiteql\nPrefer: transient\n{ \"q\": \"SELECT id, companyname FROM customer WHERE isinactive = 'F'\" }"
       },
@@ -3220,6 +3771,10 @@
      "blocks": [
       {
        "t": "p",
+       "text": "**Git** is version control: it records every change to a set of files so you can see history, undo mistakes and work on a team. Code usually lives in a Git repository on a site like GitHub."
+      },
+      {
+       "t": "p",
        "text": "The **SuiteCloud Development Framework (SDF)** lets you keep scripts **and** configuration (custom fields, records, workflows, searches, deployments) in files, in Git, instead of clicking them into each account by hand."
       },
       {
@@ -3248,6 +3803,10 @@
      "title": "The SuiteCloud CLI",
      "blocks": [
       {
+       "t": "p",
+       "text": "A **CLI** (command-line interface) is a program you run by typing commands in a terminal. The SuiteCloud CLI installs with **npm**, the package manager that comes with **Node.js** (JavaScript for your computer instead of the browser). Neither needs a NetSuite account to install."
+      },
+      {
        "t": "code",
        "text": "npm i -g @oracle/suitecloud-cli\n\nsuitecloud project:create -i         # new project (interactive)\nsuitecloud account:setup             # authenticate to an account\nsuitecloud object:import             # pull existing objects as XML\nsuitecloud file:import               # pull File Cabinet files\nsuitecloud project:validate --server # check before deploying\nsuitecloud project:deploy            # push to the account"
       },
@@ -3266,7 +3825,7 @@
      "blocks": [
       {
        "t": "p",
-       "text": "`@oracle/suitecloud-unit-testing` adds Jest with stubs for the N/ modules, so you can test script logic without an account."
+       "text": "A **unit test** is a tiny program that calls one function with known inputs and checks the output. **Jest** is the most popular JavaScript test tool. `@oracle/suitecloud-unit-testing` adds Jest with **stubs** (fake versions) of the N/ modules, so you can test script logic without an account."
       },
       {
        "t": "code",
@@ -3540,20 +4099,56 @@
  ],
  "glossary": [
   {
+   "term": "Accounts payable (A/P)",
+   "def": "Money the company owes vendors."
+  },
+  {
+   "term": "Accounts receivable (A/R)",
+   "def": "Money customers owe the company."
+  },
+  {
    "term": "ACP",
    "def": "Account Customization Project, an SDF project for your own account."
+  },
+  {
+   "term": "AMD / define()",
+   "def": "The module pattern SuiteScript files use to load N/ modules."
+  },
+  {
+   "term": "API",
+   "def": "Application Programming Interface: the official way programs talk to a system."
+  },
+  {
+   "term": "Array",
+   "def": "An ordered list of values; positions start at 0."
   },
   {
    "term": "Body field",
    "def": "A field on the record header, one value per record."
   },
   {
+   "term": "Callback",
+   "def": "A function passed to another function to be called later."
+  },
+  {
    "term": "Classification",
    "def": "Subsidiary, department, class or location on a transaction."
   },
   {
+   "term": "CLI",
+   "def": "Command-line interface: a program you run by typing commands."
+  },
+  {
    "term": "Client script",
    "def": "Script type that runs in the browser on a form."
+  },
+  {
+   "term": "Code Lab",
+   "def": "This app's companion, where you write SuiteScript against a pretend account."
+  },
+  {
+   "term": "COGS",
+   "def": "Cost of goods sold: what shipped items cost the company."
   },
   {
    "term": "Custom list",
@@ -3572,8 +4167,16 @@
    "def": "Record mode that sources fields as you set them, like the UI."
   },
   {
+   "term": "Endpoint",
+   "def": "A web address (URL) that accepts API requests."
+  },
+  {
    "term": "Entry point",
    "def": "A function NetSuite calls for a script type, like beforeSubmit or execute."
+  },
+  {
+   "term": "ERP",
+   "def": "Enterprise Resource Planning: the one system a company runs finance and operations on."
   },
   {
    "term": "Execution context",
@@ -3588,8 +4191,24 @@
    "def": "NetSuite's file system, where script files live (usually under SuiteScripts/)."
   },
   {
+   "term": "Function",
+   "def": "Reusable code that takes parameters and can return a value."
+  },
+  {
+   "term": "General ledger (GL)",
+   "def": "The master record of every money movement, organized into accounts."
+  },
+  {
+   "term": "Git",
+   "def": "Version control that records every change to a set of files."
+  },
+  {
    "term": "Governance",
    "def": "Usage-unit budgets that limit what one script execution can do."
+  },
+  {
+   "term": "HTTP methods",
+   "def": "GET reads, POST creates, PUT/PATCH update, DELETE removes."
   },
   {
    "term": "Integration record",
@@ -3600,6 +4219,14 @@
    "def": "Numeric primary key of a record or list value, unique per record type."
   },
   {
+   "term": "JavaScript",
+   "def": "The programming language SuiteScript is built on (not Java)."
+  },
+  {
+   "term": "JSON",
+   "def": "JavaScript Object Notation: text shaped like an object, used to send data between systems."
+  },
+  {
    "term": "Main Line",
    "def": "The header row of a transaction in searches. Set Main Line = true for one row per transaction."
   },
@@ -3608,8 +4235,20 @@
    "def": "Script type that processes large data sets in parallel stages and yields automatically."
   },
   {
+   "term": "Module",
+   "def": "A file of reusable code. NetSuite's are named N/record, N/search and so on."
+  },
+  {
+   "term": "Object",
+   "def": "A group of named values (properties) in curly braces."
+  },
+  {
    "term": "OneWorld",
    "def": "Multi-subsidiary edition of NetSuite."
+  },
+  {
+   "term": "Posting",
+   "def": "When a transaction writes its amounts to the general ledger."
   },
   {
    "term": "Release Preview",
@@ -3654,6 +4293,10 @@
   {
    "term": "Sourcing",
    "def": "Auto-filling fields from related records, like terms and address from the customer."
+  },
+  {
+   "term": "SQL",
+   "def": "Structured Query Language, the standard language for querying databases."
   },
   {
    "term": "Standard mode",
@@ -3708,12 +4351,20 @@
    "def": "Creating a record from another, e.g. Sales Order to Invoice (record.transform)."
   },
   {
+   "term": "Unit test",
+   "def": "A small program that checks one function's output for known inputs."
+  },
+  {
    "term": "Usage unit",
    "def": "The cost of an API call. Running out throws SSS_USAGE_LIMIT_EXCEEDED."
   },
   {
    "term": "User Event",
    "def": "Script type that runs on the server when records are loaded or saved."
+  },
+  {
+   "term": "Variable",
+   "def": "A named box holding a value (const or let)."
   },
   {
    "term": "XEDIT",

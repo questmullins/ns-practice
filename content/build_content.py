@@ -7,6 +7,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
+from ch00 import CH0  # noqa: E402
 from ch01_03 import CH1, CH2, CH3  # noqa: E402
 from ch04_06 import CH4, CH5, CH6  # noqa: E402
 from ch07_10 import CH7, CH8, CH9, CH10  # noqa: E402
@@ -57,6 +58,29 @@ GLOSSARY = [
     ("Classification", "Subsidiary, department, class or location on a transaction."),
     ("Custom record type", "A table you define, with its own fields, forms and permissions (customrecord_)."),
     ("Custom list", "A simple set of dropdown values (customlist_)."),
+    ("ERP", "Enterprise Resource Planning: the one system a company runs finance and operations on."),
+    ("General ledger (GL)", "The master record of every money movement, organized into accounts."),
+    ("Posting", "When a transaction writes its amounts to the general ledger."),
+    ("Accounts receivable (A/R)", "Money customers owe the company."),
+    ("Accounts payable (A/P)", "Money the company owes vendors."),
+    ("COGS", "Cost of goods sold: what shipped items cost the company."),
+    ("API", "Application Programming Interface: the official way programs talk to a system."),
+    ("Endpoint", "A web address (URL) that accepts API requests."),
+    ("HTTP methods", "GET reads, POST creates, PUT/PATCH update, DELETE removes."),
+    ("JSON", "JavaScript Object Notation: text shaped like an object, used to send data between systems."),
+    ("JavaScript", "The programming language SuiteScript is built on (not Java)."),
+    ("Variable", "A named box holding a value (const or let)."),
+    ("Array", "An ordered list of values; positions start at 0."),
+    ("Object", "A group of named values (properties) in curly braces."),
+    ("Function", "Reusable code that takes parameters and can return a value."),
+    ("Callback", "A function passed to another function to be called later."),
+    ("SQL", "Structured Query Language, the standard language for querying databases."),
+    ("Git", "Version control that records every change to a set of files."),
+    ("CLI", "Command-line interface: a program you run by typing commands."),
+    ("Unit test", "A small program that checks one function's output for known inputs."),
+    ("Module", "A file of reusable code. NetSuite's are named N/record, N/search and so on."),
+    ("AMD / define()", "The module pattern SuiteScript files use to load N/ modules."),
+    ("Code Lab", "This app's companion, where you write SuiteScript against a pretend account."),
 ]
 
 
@@ -73,7 +97,7 @@ def validate(chapters):
 
 
 def main():
-    chapters = [CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10]
+    chapters = [CH0, CH1, CH2, CH3, CH4, CH5, CH6, CH7, CH8, CH9, CH10]
     validate(chapters)
     data = {
         "version": 1,

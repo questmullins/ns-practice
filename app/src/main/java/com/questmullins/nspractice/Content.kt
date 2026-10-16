@@ -41,9 +41,14 @@ data class Chapter(
 
 data class GlossaryEntry(val term: String, val definition: String)
 
-class Content(val chapters: List<Chapter>, val glossary: List<GlossaryEntry>) {
+/** A Code Lab challenge as the study app lists it. Code Lab itself holds the brief and grader. */
+data class Challenge(val id: String, val chapterId: Int, val title: String, val summary: String)
+
+class Content(val chapters: List<Chapter>, val glossary: List<GlossaryEntry>, val challenges: List<Challenge>) {
     val allQuestions: List<Question> = chapters.flatMap { it.questions }
     private val questionsById = allQuestions.associateBy { it.id }
+
+    fun challengesFor(chapterId: Int): List<Challenge> = challenges.filter { it.chapterId == chapterId }
 
     fun chapter(id: Int): Chapter = chapters.first { it.id == id }
     fun question(id: String): Question? = questionsById[id]
@@ -51,10 +56,11 @@ class Content(val chapters: List<Chapter>, val glossary: List<GlossaryEntry>) {
     companion object {
         fun load(context: Context): Content {
             val json = context.assets.open("content.json").bufferedReader().use { it.readText() }
-            return parse(JSONObject(json))
+            val challenges = context.assets.open("challenges.json").bufferedReader().use { it.readText() }
+            return parse(JSONObject(json), JSONArray(challenges))
         }
 
-        private fun parse(root: JSONObject): Content {
+        private fun parse(root: JSONObject, challengeArray: JSONArray): Content {
             val chapters = root.getJSONArray("chapters").objects().map { ch ->
                 val id = ch.getInt("id")
                 Chapter(
@@ -88,7 +94,10 @@ class Content(val chapters: List<Chapter>, val glossary: List<GlossaryEntry>) {
             val glossary = root.getJSONArray("glossary").objects().map {
                 GlossaryEntry(it.getString("term"), it.getString("def"))
             }
-            return Content(chapters, glossary)
+            val challenges = challengeArray.objects().map {
+                Challenge(it.getString("id"), it.getInt("chapter"), it.getString("title"), it.getString("summary"))
+            }
+            return Content(chapters, glossary, challenges)
         }
 
         private fun parseBlock(b: JSONObject) = Block(

@@ -6,10 +6,31 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:resizeableActivity="true"
         android:theme="@style/Theme.NSPractice">
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- Code Lab gets its own launcher icon and task so it can sit beside
+             the study app in split screen. -->
+        <activity
+            android:name=".CodeLabActivity"
+            android:exported="true"
+            android:label="@string/codelab_name"
+            android:icon="@mipmap/ic_codelab"
+            android:roundIcon="@mipmap/ic_codelab"
+            android:taskAffinity="com.questmullins.nspractice.codelab"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

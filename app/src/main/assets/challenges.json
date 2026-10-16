@@ -1,0 +1,188 @@
+[
+ {
+  "id": "c0-1",
+  "chapter": 0,
+  "title": "Hello, log",
+  "summary": "Variables, strings and your first log line."
+ },
+ {
+  "id": "c0-2",
+  "chapter": 0,
+  "title": "Arrays and loops",
+  "summary": "Add up a list of order totals."
+ },
+ {
+  "id": "c0-3",
+  "chapter": 0,
+  "title": "Objects and functions",
+  "summary": "Model order lines as objects and total them with a function."
+ },
+ {
+  "id": "c0-4",
+  "chapter": 0,
+  "title": "JSON, decisions and errors",
+  "summary": "Parse JSON, branch with if/else, and catch an error."
+ },
+ {
+  "id": "c1-1",
+  "chapter": 1,
+  "title": "Follow the paper trail",
+  "summary": "Load an invoice and walk back to its sales order."
+ },
+ {
+  "id": "c1-2",
+  "chapter": 1,
+  "title": "Bill a sales order",
+  "summary": "Turn a sales order into an invoice with record.transform."
+ },
+ {
+  "id": "c2-1",
+  "chapter": 2,
+  "title": "Value vs. text",
+  "summary": "See the difference between getValue and getText."
+ },
+ {
+  "id": "c2-2",
+  "chapter": 2,
+  "title": "Walk the lines",
+  "summary": "Loop through a sublist, then save a summary on the order."
+ },
+ {
+  "id": "c2-3",
+  "chapter": 2,
+  "title": "Mind the sourcing order",
+  "summary": "Create an order in dynamic mode without losing your price."
+ },
+ {
+  "id": "c3-1",
+  "chapter": 3,
+  "title": "Your first custom record",
+  "summary": "Create a warranty in a custom record type."
+ },
+ {
+  "id": "c3-2",
+  "chapter": 3,
+  "title": "Parent and child",
+  "summary": "Add a claim to a warranty and count its claims."
+ },
+ {
+  "id": "c4-1",
+  "chapter": 4,
+  "title": "Open orders for Acme",
+  "summary": "Fix the Main Line trap in a transaction search."
+ },
+ {
+  "id": "c4-2",
+  "chapter": 4,
+  "title": "Who owes us the most?",
+  "summary": "Group and sum with a summary search."
+ },
+ {
+  "id": "c4-3",
+  "chapter": 4,
+  "title": "SuiteQL with a parameter",
+  "summary": "Query open invoices with SQL and a ? placeholder."
+ },
+ {
+  "id": "c5-1",
+  "chapter": 5,
+  "title": "Your first User Event",
+  "summary": "Default a memo when a sales order is created."
+ },
+ {
+  "id": "c5-2",
+  "chapter": 5,
+  "title": "Block risky orders",
+  "summary": "Throw an error to stop a save."
+ },
+ {
+  "id": "c5-3",
+  "chapter": 5,
+  "title": "Cheap updates",
+  "summary": "Update records with submitFields instead of load and save."
+ },
+ {
+  "id": "c6-1",
+  "chapter": 6,
+  "title": "Follow-up task after save",
+  "summary": "Use afterSubmit when you need the new record's ID."
+ },
+ {
+  "id": "c6-2",
+  "chapter": 6,
+  "title": "Validate as they type",
+  "summary": "A client script that rejects bad field values."
+ },
+ {
+  "id": "c6-3",
+  "chapter": 6,
+  "title": "Rush orders need a reason",
+  "summary": "Block a save from the browser with saveRecord."
+ },
+ {
+  "id": "c7-1",
+  "chapter": 7,
+  "title": "Settings, not hard-coding",
+  "summary": "Read a threshold from a script parameter."
+ },
+ {
+  "id": "c7-2",
+  "chapter": 7,
+  "title": "Call an outside API",
+  "summary": "Use N/https with a key stored as a parameter."
+ },
+ {
+  "id": "c7-3",
+  "chapter": 7,
+  "title": "Email a CSV report",
+  "summary": "Search, build a file, save it and email it."
+ },
+ {
+  "id": "c8-1",
+  "chapter": 8,
+  "title": "Out of units",
+  "summary": "Rescue a scheduled script that hits the usage limit."
+ },
+ {
+  "id": "c8-2",
+  "chapter": 8,
+  "title": "One search beats a thousand loads",
+  "summary": "Use a joined search column instead of loading records."
+ },
+ {
+  "id": "c8-3",
+  "chapter": 8,
+  "title": "Map/Reduce open balances",
+  "summary": "Total each customer's open invoices in parallel stages."
+ },
+ {
+  "id": "c9-1",
+  "chapter": 9,
+  "title": "A Suitelet form",
+  "summary": "Show a form on GET and create a record on POST."
+ },
+ {
+  "id": "c9-2",
+  "chapter": 9,
+  "title": "A RESTlet API",
+  "summary": "Answer GET and POST requests from another system."
+ },
+ {
+  "id": "c9-3",
+  "chapter": 9,
+  "title": "Workflow action script",
+  "summary": "Write the one step a workflow can't do by itself."
+ },
+ {
+  "id": "c10-1",
+  "chapter": 10,
+  "title": "Same code, every account",
+  "summary": "Replace a hard-coded production ID with a parameter."
+ },
+ {
+  "id": "c10-2",
+  "chapter": 10,
+  "title": "Write testable code",
+  "summary": "Build a library module and pass its unit tests."
+ }
+]

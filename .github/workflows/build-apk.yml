@@ -26,8 +26,17 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Build course content
-        run: python3 content/build_content.py
+        run: |
+          python3 content/build_content.py
+          node content/export_challenges.js
+
+      - name: Test Code Lab challenges
+        run: node codelab-tests/run-tests.js
 
       - name: Build release APK
         run: ./gradlew --no-daemon assembleRelease -PbuildNumber=${{ github.run_number }}
@@ -47,7 +56,7 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           name: NS Practice 1.0.${{ github.run_number }}
           body: |
-            Download **NS-Practice.apk** below on your Android phone and open it to install.
+            Download **NS-Practice.apk** below on your Android phone and open it to install. It adds two icons: NS Practice (study) and NS Code Lab (write SuiteScript).
             Built from ${{ github.sha }}.
           files: NS-Practice.apk
           make_latest: true

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Quiz
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Style
@@ -46,11 +47,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.questmullins.nspractice.Chapter
 import com.questmullins.nspractice.Content
+import com.questmullins.nspractice.Launch
 import com.questmullins.nspractice.ProgressStore
 
 sealed interface Screen {
@@ -84,7 +87,7 @@ fun App(content: Content, progress: ProgressStore) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             when (val s = nav.current) {
                 Screen.Home -> HomeScreen(content, progress, nav)
-                is Screen.ChapterDetail -> ChapterScreen(content.chapter(s.chapterId), progress, nav)
+                is Screen.ChapterDetail -> ChapterScreen(content.chapter(s.chapterId), content, progress, nav)
                 is Screen.Flashcards -> FlashcardsScreen(content, s.chapterId, nav)
                 Screen.TestSetup -> TestSetupScreen(content, progress, nav)
                 Screen.Glossary -> GlossaryScreen(content, nav)
@@ -117,6 +120,7 @@ fun BackTopBar(title: String, onBack: () -> Unit, actions: @Composable () -> Uni
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(content: Content, progress: ProgressStore, nav: Navigator) {
+    val context = LocalContext.current
     var confirmReset by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -147,15 +151,22 @@ private fun HomeScreen(content: Content, progress: ProgressStore, nav: Navigator
         ) {
             item { ProgressSummary(content, progress, nav) }
             item {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ActionTile("Random test", "Mixed questions", Icons.Outlined.Quiz, Modifier.weight(1f)) {
-                        nav.push(Screen.TestSetup)
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ActionTile("Random test", "Mixed questions", Icons.Outlined.Quiz, Modifier.weight(1f)) {
+                            nav.push(Screen.TestSetup)
+                        }
+                        ActionTile("Flashcards", "All chapters", Icons.Outlined.Style, Modifier.weight(1f)) {
+                            nav.push(Screen.Flashcards(null))
+                        }
                     }
-                    ActionTile("Flashcards", "All chapters", Icons.Outlined.Style, Modifier.weight(1f)) {
-                        nav.push(Screen.Flashcards(null))
-                    }
-                    ActionTile("Glossary", "${content.glossary.size} terms", Icons.AutoMirrored.Outlined.MenuBook, Modifier.weight(1f)) {
-                        nav.push(Screen.Glossary)
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ActionTile("Code Lab", "Write SuiteScript", Icons.Outlined.Code, Modifier.weight(1f)) {
+                            Launch.codeLab(context)
+                        }
+                        ActionTile("Glossary", "${content.glossary.size} terms", Icons.AutoMirrored.Outlined.MenuBook, Modifier.weight(1f)) {
+                            nav.push(Screen.Glossary)
+                        }
                     }
                 }
             }
@@ -171,7 +182,7 @@ private fun HomeScreen(content: Content, progress: ProgressStore, nav: Navigator
             }
             item {
                 Text(
-                    "Practice the labs in a sandbox or developer account, never in production.",
+                    "Code Lab runs against a pretend NetSuite account, so you can practice without one.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -199,6 +210,7 @@ private fun ProgressSummary(content: Content, progress: ProgressStore, nav: Navi
     val scores = content.chapters.mapNotNull { progress.bestScore(it.id) }
     val history = progress.history()
     val missed = progress.missedIds().count { content.question(it) != null }
+    val labsPassed = content.challenges.count { progress.labStatus(it.id) == "passed" }
     val next = content.chapters.firstOrNull { !progress.isRead(it.id) }
         ?: content.chapters.firstOrNull { (progress.bestScore(it.id) ?: 0) < 80 }
     Card(
@@ -215,7 +227,7 @@ private fun ProgressSummary(content: Content, progress: ProgressStore, nav: Navi
                 Stat("$read/${content.chapters.size}", "studied")
                 Stat(if (scores.isEmpty()) "–" else "${scores.average().toInt()}%", "avg quiz")
                 Stat("${history.size}", "tests")
-                Stat(if (history.isEmpty()) "–" else "${history.maxOf { it.percent }}%", "best test")
+                Stat("$labsPassed/${content.challenges.size}", "code labs")
             }
             if (next != null) {
                 Text(

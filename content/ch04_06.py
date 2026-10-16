@@ -48,7 +48,8 @@ search.create({
             "`search.load({ id: 'customsearch_open_orders' })` loads an existing saved search.",
             "`search.lookupFields()` reads a few fields from one record cheaply.")),
         S("SuiteQL",
-          P("**SuiteQL** is a SQL dialect (based on SQL-92 / Oracle syntax) over NetSuite's analytics data source. It is **read-only** and great for joins that searches make awkward. Run it with `N/query` or the REST SuiteQL endpoint."),
+          P("**SQL** (Structured Query Language) is the standard language for asking a database questions. The core shape is `SELECT columns FROM table WHERE condition`, and a **join** combines rows from two tables that share a value."),
+          P("**SuiteQL** is NetSuite's version of SQL (close to Oracle's). It is **read-only**: it can look but never change. It's great for joins that searches make awkward. Run it with `N/query` or the REST SuiteQL endpoint."),
           C("""
 SELECT t.id, t.tranid,
        BUILTIN.DF(t.entity) AS customer,
@@ -154,7 +155,7 @@ CH5 = chapter(
           P("SuiteScript is JavaScript that NetSuite runs on its servers (or in the browser, for client scripts). Use **version 2.1**, which supports modern syntax: `const`/`let`, arrow functions, template literals, destructuring and more."),
           P("Version 1.0 (functions like `nlapiLoadRecord`) is legacy. You'll see it in old accounts but shouldn't write new 1.0 code.")),
         S("Anatomy of a script file",
-          P("Every file uses AMD-style `define()` plus JSDoc tags that tell NetSuite what it is."),
+          P("Every file starts with a comment holding **JSDoc tags** (lines like `@NScriptType`) that tell NetSuite what the file is. Then comes `define()`, a pattern called **AMD** (Asynchronous Module Definition): you list the NetSuite **modules** you need, and NetSuite passes them into your function."),
           C("""
 /**
  * @NApiVersion 2.1

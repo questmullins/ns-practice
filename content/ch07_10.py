@@ -32,6 +32,7 @@ if (runtime.executionContext === runtime.ContextType.CSV_IMPORT) { /* ... */ }
 """),
           P("**Script parameters** (IDs start with `custscript_`) are fields on the script record whose values are set per deployment. Use them instead of hard-coding IDs, emails and thresholds.")),
         S("N/https: calling the outside world",
+          P("An **HTTP request** is how programs talk over the web: you send a **method** (GET to read, POST to create, PUT/PATCH to update, DELETE to remove) to a **URL**, and get back a **status code** (200 means OK, 404 not found, 401 not allowed) and a **body**, usually JSON."),
           C("""
 const res = https.post({
   url: 'https://api.example.com/orders',
@@ -408,6 +409,7 @@ define(['N/record', 'N/search'], (record, search) => {
             "URL: `https://<account>.restlets.api.netsuite.com/app/site/hosting/restlet.nl?script=123&deploy=1`.",
             "RESTlets get 5,000 units per call.")),
         S("SuiteTalk REST",
+          P("**REST** is a common style of web API: each kind of thing has a URL, and the HTTP method says what to do with it. GET a customer's URL to read it, PATCH it to update it."),
           C("""
 GET https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/record/v1/customer/123
 
@@ -504,6 +506,7 @@ CH10 = chapter(
     10, "SDF, Environments & Deployment", "Working like a professional", "Week 8",
     [
         S("Customization as code",
+          P("**Git** is version control: it records every change to a set of files so you can see history, undo mistakes and work on a team. Code usually lives in a Git repository on a site like GitHub."),
           P("The **SuiteCloud Development Framework (SDF)** lets you keep scripts **and** configuration (custom fields, records, workflows, searches, deployments) in files, in Git, instead of clicking them into each account by hand."),
           C("""
 my-project/
@@ -519,6 +522,7 @@ my-project/
             "**SuiteApp project**: a packaged app (with an ID like `com.mycompany.myapp`) distributed to other accounts, often through the SuiteApp Marketplace."),
           P("The older way to move customizations between accounts is **Bundles** (SuiteBundler). You'll still see them in many companies.")),
         S("The SuiteCloud CLI",
+          P("A **CLI** (command-line interface) is a program you run by typing commands in a terminal. The SuiteCloud CLI installs with **npm**, the package manager that comes with **Node.js** (JavaScript for your computer instead of the browser). Neither needs a NetSuite account to install."),
           C("""
 npm i -g @oracle/suitecloud-cli
 
@@ -532,7 +536,7 @@ suitecloud project:deploy            # push to the account
           P("There are also SuiteCloud extensions for VS Code and WebStorm that wrap the same commands."),
           TIP("Run `project:validate --server` before every deploy. It catches missing dependencies and bad references against the real account.")),
         S("Unit testing",
-          P("`@oracle/suitecloud-unit-testing` adds Jest with stubs for the N/ modules, so you can test script logic without an account."),
+          P("A **unit test** is a tiny program that calls one function with known inputs and checks the output. **Jest** is the most popular JavaScript test tool. `@oracle/suitecloud-unit-testing` adds Jest with **stubs** (fake versions) of the N/ modules, so you can test script logic without an account."),
           C("""
 import record from 'N/record';
 import Record from 'N/record/instance';

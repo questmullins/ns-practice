@@ -14,8 +14,25 @@ data class TestRecord(val timestamp: Long, val correct: Int, val total: Int) {
  * screens recompose after any change.
  */
 class ProgressStore(context: Context) {
-    private val prefs = context.getSharedPreferences("progress", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
     private var revision by mutableIntStateOf(0)
+
+    // Code Lab writes results into the same preferences from its own window; this keeps
+    // the study screens in sync even when both apps are on screen side by side.
+    // SharedPreferences only holds listeners weakly, so keep a reference here.
+    private val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key == null || key.startsWith("lab_")) changed()
+    }
+
+    init {
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    /** "passed", "tried" or null for a Code Lab challenge. */
+    fun labStatus(challengeId: String): String? {
+        revision
+        return prefs.getString("lab_$challengeId", null)
+    }
 
     private fun changed() {
         revision++
@@ -78,5 +95,17 @@ class ProgressStore(context: Context) {
     fun reset() {
         prefs.edit().clear().apply()
         changed()
+    }
+
+    companion object {
+        const val PREFS = "progress"
+
+        /** Saves a Code Lab result. A pass is never downgraded by a later failed attempt. */
+        fun writeLabResult(context: Context, challengeId: String, passed: Boolean) {
+            val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            val key = "lab_$challengeId"
+            if (!passed && prefs.getString(key, null) == "passed") return
+            prefs.edit().putString(key, if (passed) "passed" else "tried").apply()
+        }
     }
 }
